@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="JOFA" default="build" basedir="." description="a demo project">
+    <property name="buildDir" value="build"/>
+    <property name="srcDir" value="src"/>
+
+    <fileset dir="${srcDir}" id="srcfiles">
+        <include name="**"/>
+        <exclude name="*.tmp"/>
+    </fileset>
+    <fileset dir="${buildDir}" id="buildfiles">
+        <include name="*"/>
+    </fileset>
+
+    <target name="clean">
+        <echo msg="Cleaning build directory..."/>
+        <delete>
+            <fileset refid="buildfiles"/>
+        </delete>
+    </target>
+
+    <target name="test">
+        <phpunit printsummary="true" haltonfailure="true">
+            <batchtest>
+                <fileset dir="./tests">
+                    <include name="*Test.php"/>
+                </fileset>
+            </batchtest>
+        </phpunit>
+    </target>
+
+    <target name="build" depends="test, clean">
+        <echo msg="Copying to build directory..."/>
+        <copy todir="${buildDir}">
+            <fileset refid="srcfiles"/>
+        </copy>
+    </target>
+</project>
