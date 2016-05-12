@@ -1,5 +1,6 @@
 <?php
 
+require('../src/connection.php');
 /**
  * Created by PhpStorm.
  * User: Ferenc_S
@@ -11,8 +12,12 @@ class connectionTest extends PHPUnit_Framework_TestCase
     private  $db;
     protected function setUp()
     {
-        include_once('../src/connection.php');
         $this->db = Db::getInstance();
+    }
+
+    protected function tearDown()
+    {
+        $this->db = NULL;
     }
 
     public function testGetUserNameByID()
