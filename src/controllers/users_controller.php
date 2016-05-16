@@ -1,5 +1,7 @@
 <?php
 
+require('models/user.php');
+
 /**
  * Created by PhpStorm.
  * User: Ferenc_S
@@ -18,20 +20,31 @@ class UsersController
         $db = Db::getInstance();
         $email = $_POST["email"];
         $password = $_POST["password"];
-        $username =  $_POST["username"];
+        $username = $_POST["username"];
         $db->createUser($email, $password, $username);
         echo '<script>alert("very registered");</script>';
     }
 
-    public function login(){
+    public function login()
+    {
         $email = $_POST["email"];
         $password = $_POST["password"];
         $db = Db::getInstance();
-        $db->login($email, $password);
-        session_start();
+        $user = $db->login($email, $password);
+        if ($user) {
+            session_start();
+            $_SESSION[USER] = $user;
+            require('views/users/home.php');
+        } else echo 'no good';
     }
 
-    public function logout(){
+    public function invalidLoginInfo()
+    {
+        require('views/users/invalid.html');
+    }
+
+    public function logout()
+    {
         session_destroy();
     }
 

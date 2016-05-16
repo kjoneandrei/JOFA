@@ -63,5 +63,11 @@ class User
         $this->active = $active;
     }
 
+    public static function fromRow($row)
+    {
+        $instance = new self($row[ID], $row[EMAIL], $row[PASSWORD], $row[USERNAME], $row[ACTIVE]);
+        return $instance;
+    }
+
 
 }

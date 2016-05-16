@@ -36,7 +36,9 @@ class Db extends PDO
     {
         $sth = $this->prepare("SELECT * FROM user WHERE EMAIL=?");
         $sth->execute(array($userEmail));
-        return new User();
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            return User::fromRow($row);
+        }
     }
 
     public function createUser($email, $password, $username)
@@ -50,7 +52,8 @@ class Db extends PDO
         return $id;
     }
 
-    function hash_password($plainpw){
+    function hash_password($plainpw)
+    {
         $options = [
             'cost' => 12,
         ];
@@ -84,8 +87,12 @@ class Db extends PDO
 
     function login($email, $password)
     {
-        $this->loadUserByEmail($email);
-        echo USERNAME;
+        $user = $this->loadUserByEmail($email);
+        if (password_verify($password, $user->getPassword())) {
+            return $user;
+        } else {
+            return false;
+        }
     }
 }
 

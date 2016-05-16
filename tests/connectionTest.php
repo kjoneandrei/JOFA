@@ -1,7 +1,8 @@
 <?php
 
 require('../src/connection.php');
-require('../src//models/user.php');
+require('../src/models/user.php');
+require('../src/ini.php');
 /**
  * Created by PhpStorm.
  * User: Ferenc_S
@@ -11,6 +12,7 @@ require('../src//models/user.php');
 class connectionTest extends PHPUnit_Framework_TestCase
 {
     private  $db;
+    private $generatedID = 'B8733B41-BF8C-465B-99E9-A45AE784065A';
     protected function setUp()
     {
         $this->db = Db::getInstance();
@@ -32,17 +34,16 @@ class connectionTest extends PHPUnit_Framework_TestCase
         $password = 'verybcrypt';
         $username = 'steve';
         $active = 0;
-        $generatedID = $this->db->createUser($email, $password, $username, $active);
-        $this->assertEquals('steve', $this->db->loadUserNameByID($generatedID));
+        $this->generatedID = $this->db->createUser($email, $password, $username, $active);
+        $this->assertEquals('steve', $this->db->loadUserNameByID($this->generatedID));
     }
 
     public function testLoadUserByEmail(){
-        $id = 1;
         $email = 'spam@spam.spam';
         $password = 'verybcrypt';
         $username = 'steve';
         $active = 0;
-        $exp_user = new User($id, $email, $password, $username, $active);
+        $exp_user = new User($this->generatedID, $email, $password, $username, $active);
         $act_user = $this->db->loadUserByEmail('spam@spam.spam');
         $this->assertEquals($exp_user->getId(), $act_user->getId());
     }
