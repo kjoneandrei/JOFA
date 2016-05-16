@@ -69,13 +69,13 @@ LOCK TABLES `message` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `new_table`
+-- Table structure for table `attempt`
 --
 
-DROP TABLE IF EXISTS `new_table`;
+DROP TABLE IF EXISTS `attempt`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `new_table` (
+CREATE TABLE `attempt` (
   `USER_EMAIL` varchar(45) NOT NULL,
   `SUCCESSFUL` bit(1) NOT NULL,
   `DATE` datetime NOT NULL,
@@ -84,12 +84,12 @@ CREATE TABLE `new_table` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `new_table`
+-- Dumping data for table `attempt`
 --
 
-LOCK TABLES `new_table` WRITE;
-/*!40000 ALTER TABLE `new_table` DISABLE KEYS */;
-/*!40000 ALTER TABLE `new_table` ENABLE KEYS */;
+LOCK TABLES `attempt` WRITE;
+/*!40000 ALTER TABLE `attempt` DISABLE KEYS */;
+/*!40000 ALTER TABLE `attempt` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
