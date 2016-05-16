@@ -36,8 +36,7 @@ class Db extends PDO
     {
         $sth = $this->prepare("SELECT * FROM user WHERE EMAIL=?");
         $sth->execute(array($userEmail));
-        $userName = $sth->fetchColumn(3);
-        return $userName;
+        return new User();
     }
 
     public function createUser($email, $password, $username)
@@ -45,10 +44,10 @@ class Db extends PDO
         $id = $this->generateUserID();
         $hashed_password = $this->hash_password($password);
         $active = 1;
-
         $statement = $this->prepare("INSERT INTO user(ID, EMAIL, PASSWORD, USERNAME, ACTIVE)
     VALUES(?, ?, ?, ?, ?)");
         $statement->execute(array($id, $email, $hashed_password, $username, $active));
+        return $id;
     }
 
     function hash_password($plainpw){

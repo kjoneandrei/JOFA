@@ -28,17 +28,22 @@ class connectionTest extends PHPUnit_Framework_TestCase
 
     public function testCreateUser()
     {
+        $email = 'spam@spam.spam';
+        $password = 'verybcrypt';
+        $username = 'steve';
+        $active = 0;
+        $generatedID = $this->db->createUser($email, $password, $username, $active);
+        $this->assertEquals('steve', $this->db->loadUserNameByID($generatedID));
+    }
+
+    public function testLoadUserByEmail(){
         $id = 1;
         $email = 'spam@spam.spam';
         $password = 'verybcrypt';
         $username = 'steve';
         $active = 0;
-        $this->db->createUser($id, $email, $password, $username, $active);
-        $this->assertEquals('steve', $this->db->loadUserNameByID($id));
-    }
-
-    public function testLoadUserByEmail(){
-        $exp_user = new user()
-        $act_user = $this->db->loadUserByEmail(spam@spam.spam);
+        $exp_user = new User($id, $email, $password, $username, $active);
+        $act_user = $this->db->loadUserByEmail('spam@spam.spam');
+        $this->assertEquals($exp_user->getId(), $act_user->getId());
     }
 }

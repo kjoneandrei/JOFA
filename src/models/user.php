@@ -6,13 +6,53 @@
  * Date: 5/12/2016
  * Time: 4:13 PM
  */
-class user
+class User
 {
     private $id;
     private $email;
     private $password;
     private $username;
     private $active;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUsername()
+    {
+        return $this->username;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getActive()
+    {
+        return $this->active;
+    }
 
     public function __construct($id, $email, $password, $username, $active)
     {
