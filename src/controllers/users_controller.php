@@ -6,7 +6,7 @@
  * Date: 5/16/2016
  * Time: 12:19 PM
  */
-class user_controller
+class UsersController
 {
     //post only
     public function register()
@@ -18,9 +18,8 @@ class user_controller
         $db = Db::getInstance();
         $email = $_POST["email"];
         $password = $_POST["password"];
-        $username = 'gasd';
-        $active = 0;
-        $db->createUser($id, $email, $password, $username, $active);
+        $username =  $_POST["username"];
+        $db->createUser($email, $password, $username);
         echo '<script>alert("very registered");</script>';
     }
 
