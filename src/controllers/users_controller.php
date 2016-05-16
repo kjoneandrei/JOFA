@@ -23,6 +23,18 @@ class UsersController
         echo '<script>alert("very registered");</script>';
     }
 
+    public function login(){
+        $email = $_POST["email"];
+        $password = $_POST["password"];
+        $db = Db::getInstance();
+        $db->login($email, $password);
+        session_start();
+    }
+
+    public function logout(){
+        session_destroy();
+    }
+
     public function error()
     {
         require('views/pages/error.php');

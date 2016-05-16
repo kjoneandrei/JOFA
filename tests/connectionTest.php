@@ -1,6 +1,7 @@
 <?php
 
 require('../src/connection.php');
+require('../src//models/user.php');
 /**
  * Created by PhpStorm.
  * User: Ferenc_S
@@ -34,5 +35,10 @@ class connectionTest extends PHPUnit_Framework_TestCase
         $active = 0;
         $this->db->createUser($id, $email, $password, $username, $active);
         $this->assertEquals('steve', $this->db->loadUserNameByID($id));
+    }
+
+    public function testLoadUserByEmail(){
+        $exp_user = new user()
+        $act_user = $this->db->loadUserByEmail(spam@spam.spam);
     }
 }

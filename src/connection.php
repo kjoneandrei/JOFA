@@ -1,7 +1,4 @@
 <?php
-ini_set('display_startup_errors', 1);
-ini_set('display_errors', 1);
-error_reporting(-1);
 
 class Db extends PDO
 {
@@ -27,22 +24,39 @@ class Db extends PDO
         return $userName;
     }
 
+    public function loadUserByID($userID)
+    {
+        $sth = $this->prepare("SELECT * FROM user WHERE ID=?");
+        $sth->execute(array($userID));
+        $userName = $sth->fetchColumn(3);
+        return $userName;
+    }
+
+    public function loadUserByEmail($userEmail)
+    {
+        $sth = $this->prepare("SELECT * FROM user WHERE EMAIL=?");
+        $sth->execute(array($userEmail));
+        $userName = $sth->fetchColumn(3);
+        return $userName;
+    }
+
     public function createUser($email, $password, $username)
     {
         $id = $this->generateUserID();
-        $options = [
-            'cost' => 12,
-        ];
-        $hashed_password = password_hash($password, PASSWORD_BCRYPT, $options) . "\n";
+        $hashed_password = $this->hash_password($password);
         $active = 1;
+
         $statement = $this->prepare("INSERT INTO user(ID, EMAIL, PASSWORD, USERNAME, ACTIVE)
     VALUES(?, ?, ?, ?, ?)");
         $statement->execute(array($id, $email, $hashed_password, $username, $active));
     }
 
-    public function loginUser($email, $password)
-    {
-
+    function hash_password($plainpw){
+        $options = [
+            'cost' => 12,
+        ];
+        $hashed_password = password_hash($plainpw, PASSWORD_BCRYPT, $options) . "\n";
+        return $hashed_password;
     }
 
     function generateUserID()
@@ -67,6 +81,12 @@ class Db extends PDO
                 . chr(125);// "}"
             return $uuid;
         }
+    }
+
+    function login($email, $password)
+    {
+        $this->loadUserByEmail($email);
+        echo USERNAME;
     }
 }
 
