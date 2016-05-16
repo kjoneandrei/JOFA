@@ -18,10 +18,10 @@ class Db extends PDO
 
     public function loadUserNameByID($userID)
     {
-        $sql = 'SELECT * FROM user WHERE ID = ' . $userID;
-        foreach ($this->query($sql) as $row) {
-            return $row['USERNAME'];
-        }
+        $sth = $this->prepare("SELECT * FROM user WHERE ID=?");
+        $sth->execute(array($userID));
+        $userName = $sth->fetchColumn(3);
+            return $userName;
     }
 
     public function createUser($id, $email, $password, $username, $active)

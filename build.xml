@@ -28,7 +28,7 @@
         </phpunit>
     </target>
 
-    <target name="build" depends="test, clean">
+    <target name="build" depends="clean">
         <echo msg="Copying to build directory..."/>
         <copy todir="${buildDir}">
             <fileset refid="srcfiles"/>
