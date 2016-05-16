@@ -4,8 +4,8 @@ class PagesController
 {
     public function home()
     {
-       // $db = Db::getInstance();
-      //  $username = 'testusername';
+        $db = Db::getInstance();
+        $username = $db->loadUserNameByID(1);
         require('views/pages/home.php');
     }
 
