@@ -2,3 +2,18 @@ li:hover {
     cursor: pointer;
     cursor: hand;
 }
+
+/*CSS File For Sign-Up webpage*/
+#body-color {
+    background-color: #6699CC;
+}
+
+#Sign-Up {
+    margin-top: 150px;
+    margin-bottom: 150px;
+    margin-right: 150px;
+    margin-left: 450px;
+    padding: 9px 35px;
+}
+
+
