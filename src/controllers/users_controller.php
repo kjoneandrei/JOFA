@@ -1,6 +1,6 @@
 <?php
 
-require('models/user.php');
+require_once('models/user.php');
 
 /**
  * Created by PhpStorm.
@@ -32,22 +32,26 @@ class UsersController
         $db = Db::getInstance();
         $user = $db->login($email, $password);
         if ($user) {
-            session_start();
             $_SESSION[USER] = $user;
-            require('views/users/home.php');
+            header('location:?controller=users&action=home', true);
         } else echo 'no good';
+    }
+
+    public function logout()
+    {
+        session_destroy();
+        echo 'bb kind prince';
+    }
+
+    public function home()
+    {
+        require('views/users/home.php');
     }
 
     public function invalidLoginInfo()
     {
         require('views/users/invalid.html');
     }
-
-    public function logout()
-    {
-        session_destroy();
-    }
-
     public function error()
     {
         require('views/pages/error.php');

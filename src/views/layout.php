@@ -1,4 +1,8 @@
 <DOCTYPE html>
+    <?php
+    include_once 'models/user.php';
+    session_start();
+    ?>
 <html>
   <head>
       <script src="js/jquery-2.2.3.min.js"></script>
@@ -16,7 +20,12 @@
                 </div>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a data-toggle="modal" data-target="#signup-modal"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                    <li><a data-toggle="modal" data-target="#login-modal"><span class="glyphicon glyphicon-sign-in"></span> Log In</a></li>
+                    <?php if (isset($_SESSION[USER])) {
+                        echo '<li><a href="?controller=users&action=logout"><span class="glyphicon glyphicon-sign-out"></span> Log out</a></li>';
+                    } else {
+                        echo '<li><a data-toggle="modal" data-target="#login-modal"><span class="glyphicon glyphicon-sign-in"></span> Log In</a></li>';
+                    }
+                    ?>
                 </ul>
             </div>
         </nav>
@@ -37,5 +46,5 @@
         </div>
     </div>
 
-  <body>
-<html>
+  </body>
+</html>
