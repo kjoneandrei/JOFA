@@ -29,9 +29,17 @@ class Db extends PDO
 
     public function createUser($id, $email, $password, $username, $active)
     {
+        $options = [
+            'cost' => 12,
+        ];
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT, $options)."\n";
         $statement = $this->prepare("INSERT INTO user(ID, EMAIL, PASSWORD, USERNAME, ACTIVE)
     VALUES(?, ?, ?, ?, ?)");
-        $statement->execute(array($id, $email, $password, $username, $active));
+        $statement->execute(array($id, $email, $hashed_password, $username, $active));
+    }
+
+    public function validateUser($email, $password) {
+
     }
 }
 
