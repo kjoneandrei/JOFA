@@ -32,8 +32,18 @@ class Db extends PDO
     {
         $sth = $this->prepare("SELECT * FROM user WHERE ID=?");
         $sth->execute(array($userID));
-        $userName = $sth->fetchColumn(3);
-        return $userName;
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            return User::fromRow($row);
+        }
+    }
+
+    public function loadUserByUsername($username)
+    {
+        $sth = $this->prepare("SELECT * FROM user WHERE USERNAME=?");
+        $sth->execute(array($username));
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            return User::fromRow($row);
+        }
     }
 
     public function loadUserByEmail($userEmail)
@@ -113,7 +123,7 @@ class Db extends PDO
     {
         $id = $this->generateMessageID();
         $statement = $this->prepare("INSERT INTO message(ID, SENDER_USER_ID, RECIPIENT_USER_ID, DATE, MSG_HEADER, MSG_BODY)
-    VALUES(?, ?, ?, ?, ?)");
+    VALUES(?, ?, ?, ?, ?, ?)");
         $statement->execute(array($id, $senderID, $recipientID, getdate(), $msg_header, $msg_body));
         return $id;
     }

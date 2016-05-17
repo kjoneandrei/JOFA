@@ -63,7 +63,7 @@ class UsersController
     public function newmessage()
     {
         $db = Db::getInstance();
-        $recipient = $db->loadUserByID($_POST["recipient"]);
+        $recipient = $db->loadUserByUsername($_POST["recipient"]);
         $db->createMessage($_SESSION[USER]->getId(), $recipient->getId(), $_POST["header"], $_POST["body"]);
     }
 
