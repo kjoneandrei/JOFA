@@ -12,16 +12,27 @@
       <link rel="stylesheet" type="text/css" href="css/JOFA.css">
   </head>
   <body>
-    <header>
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="/">Home</a>
-                </div>
+  <header>
+      <nav class="navbar navbar-default">
+          <div class="container-fluid">
+              <div class="navbar-header">
+                  <a class="navbar-brand" href="/">Home</a>
+              </div>
+              <div class="navbar-header"> <a class="navbar-brand" href="/">
+                  <?php if (isset($_SESSION[USER])) {
+                      echo 'Logged in as:';
+                      echo $_SESSION[USER]->getUserName();
+
+                  } else {
+                      echo 'Somebody forgot to register';
+                  }
+                  ?>
+                      </a>
+              </div>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a data-toggle="modal" data-target="#signup-modal"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
                     <?php if (isset($_SESSION[USER])) {
-                        echo '<li><a href="?controller=users&action=logout"><span class="glyphicon glyphicon-sign-out"></span> Log out</a></li>';
+                        echo '<li><a href="?controller=users&action=logout"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>';
                     } else {
                         echo '<li><a data-toggle="modal" data-target="#login-modal"><span class="glyphicon glyphicon-sign-in"></span> Log In</a></li>';
                     }

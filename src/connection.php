@@ -52,6 +52,11 @@ class Db extends PDO
         return $id;
     }
 
+    public function deleteUser($id){
+        $sth = $this->prepare("DELETE FROM user WHERE ID=?");
+        $sth->execute(array($id));
+    }
+
     function hash_password($plainpw)
     {
         $options = [
