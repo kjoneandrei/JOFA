@@ -16,6 +16,10 @@ class Db extends PDO
         return self::$instance;
     }
 
+    /*
+     * UserManager
+     */
+
     public function loadUserNameByID($userID)
     {
         $sth = $this->prepare("SELECT * FROM user WHERE ID=?");
@@ -52,7 +56,8 @@ class Db extends PDO
         return $id;
     }
 
-    public function deleteUser($id){
+    public function deleteUser($id)
+    {
         $sth = $this->prepare("DELETE FROM user WHERE ID=?");
         $sth->execute(array($id));
     }
@@ -98,6 +103,21 @@ class Db extends PDO
         } else {
             return false;
         }
+    }
+
+    /*
+     * MessageManager
+     */
+
+    public function loadMessageByUser($userID)
+    {
+        $sth = $this->prepare("SELECT * FROM message WHERE RECIPIENT_USER_ID=?");
+        $sth->execute(array($userID));
+        $result = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            array_push($result, Message::fromRow($row));
+        }
+        return $result;
     }
 }
 

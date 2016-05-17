@@ -1,4 +1,5 @@
 <?php
+require_once('connection.php');
 /**
  * Created by PhpStorm.
  * User: Ferenc_S
@@ -14,8 +15,15 @@ error_reporting(-1);
 // App constants
 define('USER', 'USER');
 // DB constants
+// USER
 define("ID", "ID");
 define("EMAIL", "EMAIL");
 define("PASSWORD", "PASSWORD");
 define("USERNAME", "USERNAME");
 define("ACTIVE", "ACTIVE");
+// MESSAGE
+define("SENDER_USER_ID", "SENDER_USER_ID");
+define("RECIPIENT_USER_ID", "RECIPIENT_USER_ID");
+define("DATE", "DATE");
+define("MSG_HEADER", "MSG_HEADER");
+define("MSG_BODY", "MSG_BODY");

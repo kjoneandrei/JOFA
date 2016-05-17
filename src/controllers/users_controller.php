@@ -1,6 +1,7 @@
 <?php
 
 require_once('models/user.php');
+require_once('models/message.php');
 
 /**
  * Created by PhpStorm.
@@ -48,10 +49,21 @@ class UsersController
         require('views/users/home.php');
     }
 
+    public function mymessages()
+    {
+        if (!isset($_SESSION[USER])) {
+            return error;
+        }
+        $db = Db::getInstance();
+        $messages = $db->loadMessageByUser($_SESSION[USER]->getId());
+        require('views/users/mymessages.php');
+    }
+
     public function invalidLoginInfo()
     {
         require('views/users/invalid.html');
     }
+
     public function error()
     {
         require('views/pages/error.php');
