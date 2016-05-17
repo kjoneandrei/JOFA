@@ -109,6 +109,15 @@ class Db extends PDO
      * MessageManager
      */
 
+    public function createMessage($senderID, $recipientID, $msg_header, $msg_body)
+    {
+        $id = $this->generateMessageID();
+        $statement = $this->prepare("INSERT INTO message(ID, SENDER_USER_ID, RECIPIENT_USER_ID, DATE, MSG_HEADER, MSG_BODY)
+    VALUES(?, ?, ?, ?, ?)");
+        $statement->execute(array($id, $senderID, $recipientID, getdate(), $msg_header, $msg_body));
+        return $id;
+    }
+
     public function loadMessageByUser($userID)
     {
         $sth = $this->prepare("SELECT * FROM message WHERE RECIPIENT_USER_ID=?");
@@ -118,6 +127,11 @@ class Db extends PDO
             array_push($result, Message::fromRow($row));
         }
         return $result;
+    }
+
+    function generateMessageID()
+    {
+        return trim($this->generateGUID(), '{}');
     }
 }
 

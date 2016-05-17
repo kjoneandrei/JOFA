@@ -60,6 +60,13 @@ class UsersController
         require('views/users/mymessages.php');
     }
 
+    public function newmessage()
+    {
+        $db = Db::getInstance();
+        $recipient = $db->loadUserByID($_POST["recipient"]);
+        $db->createMessage($_SESSION[USER]->getId(), $recipient->getId(), $_POST["header"], $_POST["body"]);
+    }
+
     public function goodbye()
     {
         $username = $_GET['username'];
