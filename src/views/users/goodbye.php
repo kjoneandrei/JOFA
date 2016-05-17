@@ -1,1 +1,1 @@
-<p>Thanks for coming, hope to see you again!</p>
+<p>Thanks for coming <?php echo $username?>, hope to see you again!</p>

@@ -15,8 +15,12 @@ li:hover {
     margin-left: 450px;
     padding: 9px 35px;
 }
+
 .msgbody{
     display:none
 }
 
+div.modal div.modal-backdrop {
+     z-index: 0;
+ }
 

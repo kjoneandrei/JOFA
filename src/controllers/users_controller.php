@@ -40,8 +40,9 @@ class UsersController
 
     public function logout()
     {
+        $username = $_SESSION[USER]->getUsername();
         session_destroy();
-        echo 'bb kind prince';
+        header('location:?controller=users&action=goodbye&username=' . $username, true);
     }
 
     public function home()
@@ -59,6 +60,15 @@ class UsersController
         require('views/users/mymessages.php');
     }
 
+    public function goodbye()
+    {
+        $username = $_GET['username'];
+        require 'views/users/goodbye.php';
+    }
+
+    /*
+     * errors
+     */
     public function invalidLoginInfo()
     {
         require('views/users/invalid.html');
