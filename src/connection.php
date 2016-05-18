@@ -124,7 +124,7 @@ class Db extends PDO
         $id = $this->generateMessageID();
         $statement = $this->prepare("INSERT INTO message(ID, SENDER_USER_ID, RECIPIENT_USER_ID, DATE, MSG_HEADER, MSG_BODY)
     VALUES(?, ?, ?, ?, ?, ?)");
-        $statement->execute(array($id, $senderID, $recipientID, getdate(), $msg_header, $msg_body));
+        $statement->execute(array($id, $senderID, $recipientID,  date('Y-m-d H:i:s'), $msg_header, $msg_body));
         return $id;
     }
 
