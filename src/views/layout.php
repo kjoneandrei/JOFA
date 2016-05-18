@@ -23,8 +23,6 @@
                             echo 'Logged in as: ';
                             echo $_SESSION[USER]->getUserName();
 
-                        } else {
-                            echo 'Somebody forgot to register';
                         }
                         ?>
                     </a>
