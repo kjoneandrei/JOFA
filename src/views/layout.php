@@ -32,7 +32,8 @@
                 <ul class="nav navbar-nav navbar-right">
                     <?php if (isset($_SESSION[USER])) {
                         echo '<li><a data-toggle="modal" data-target="#newmessage-modal"><span class="glyphicon glyphicon-plus"></span> New message</a></li>';
-                        echo '<li><a href="?controller=users&action=mymessages"><span class="glyphicon glyphicon-list-alt"></span> My messages</a></li>';
+                        echo '<li><a href="?controller=users&action=sentmessages"><span class="glyphicon glyphicon-list-alt"></span> Sent Messages</a></li>';
+                        echo '<li><a href="?controller=users&action=mymessages"><span class="glyphicon glyphicon-envelope"></span> My messages</a></li>';
                         echo '<li><a href="?controller=users&action=logout"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>';
                     } else {
                         echo '<li><a data-toggle="modal" data-target="#signup-modal"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>';

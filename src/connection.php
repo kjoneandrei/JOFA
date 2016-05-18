@@ -139,6 +139,17 @@ class Db extends PDO
         return $result;
     }
 
+    public function loadMessageBySender($userID)
+    {
+        $sth = $this->prepare("SELECT * FROM message WHERE SENDER_USER_ID=?");
+        $sth->execute(array($userID));
+        $result = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            array_push($result, Message::fromRow($row));
+        }
+        return $result;
+    }
+
     function generateMessageID()
     {
         return trim($this->generateGUID(), '{}');
