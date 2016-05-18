@@ -11,7 +11,10 @@ function call($controller, $action)
             break;
         case 'users':
             $controller = new UsersController();
-        break;
+            break;
+        case 'messages':
+            $controller = new MessagesController();
+            break;
     }
 
     // call the action
@@ -20,8 +23,10 @@ function call($controller, $action)
 
 // just a list of the controllers we have and their actions
 // we consider those "allowed" values
-$controllers = array('pages' => ['home', 'error'],
-    'users' => ['register', 'login', 'logout', 'home', 'newmessage', 'mymessages', 'sentmessages', 'goodbye', 'error']);
+$controllers = array(
+    'pages' => ['home', 'error'],
+    'users' => ['register', 'login', 'logout', 'home', 'goodbye', 'error'],
+    'messages' => ['newmessage', 'mymessages', 'sentmessages', 'error']);
 
 // check that the requested controller and action are both allowed
 // if someone tries to access something else he will be redirected to the error action of the pages controller

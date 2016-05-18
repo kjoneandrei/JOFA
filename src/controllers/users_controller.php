@@ -50,23 +50,6 @@ class UsersController
         require('views/users/home.php');
     }
 
-    public function mymessages()
-    {
-        if (!isset($_SESSION[USER])) {
-            return error;
-        }
-        $db = Db::getInstance();
-        $messages = $db->loadMessageByUser($_SESSION[USER]->getId());
-        require('views/users/mymessages.php');
-    }
-
-    public function newmessage()
-    {
-        $db = Db::getInstance();
-        $recipient = $db->loadUserByUsername($_POST["recipient"]);
-        $db->createMessage($_SESSION[USER]->getId(), $recipient->getId(), $_POST["header"], $_POST["body"]);
-    }
-
     public function goodbye()
     {
         $username = $_GET['username'];
