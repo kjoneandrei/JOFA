@@ -7,7 +7,7 @@
                 <h4 class="modal-title">Log In </h4>
             </div>
             <div class="modal-body">
-
+                <?php if(isset($_GET['failed'])) include 'views/users/invalid.php'; ?>
                 <form method="POST" action="?controller=users&action=login">
                     <div class="form-group">
                         <label for="email">Email:</label>
@@ -25,7 +25,6 @@
                     </div>
 
                     <td><input id="button" type="submit" class="btn btn-default" name="submit" value="Log-In"></td>
-
                 </form>
 
             </div>

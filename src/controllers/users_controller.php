@@ -23,7 +23,6 @@ class UsersController
         $password = $_POST["password"];
         $username = $_POST["username"];
         $db->createUser($email, $password, $username);
-        echo '<script>alert("very registered");</script>';
     }
 
     public function login()
@@ -35,7 +34,7 @@ class UsersController
         if ($user) {
             $_SESSION[USER] = $user;
             header('location:?controller=users&action=home', true);
-        } else echo 'no good';
+        } else ;
     }
 
     public function logout()
@@ -61,7 +60,7 @@ class UsersController
      */
     public function invalidLoginInfo()
     {
-        require('views/users/invalid.html');
+        require('views/users/invalid.php');
     }
 
     public function error()

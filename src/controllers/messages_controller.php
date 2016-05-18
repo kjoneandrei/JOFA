@@ -16,6 +16,7 @@ class MessagesController
         $db = Db::getInstance();
         $recipient = $db->loadUserByUsername($_POST["recipient"]);
         $db->createMessage($_SESSION[USER]->getId(), $recipient->getId(), $_POST["header"], $_POST["body"]);
+        header('location:?controller=messages&action=sentmessages');
     }
 
     public function mymessages()
@@ -37,20 +38,9 @@ class MessagesController
         $messages = $db->loadMessageBySender($_SESSION[USER]->getId());
         require('views/messages/sentmessages.php');
     }
-
-    public function goodbye()
-    {
-        $username = $_GET['username'];
-        require 'views/messages/goodbye.php';
-    }
-
     /*
      * errors
      */
-    public function invalidLoginInfo()
-    {
-        require('views/users/invalid.html');
-    }
 
     public function error()
     {
