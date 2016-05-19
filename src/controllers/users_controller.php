@@ -29,14 +29,20 @@ class UsersController
     {
         $email = $_POST["email"];
         $password = $_POST["password"];
+        $date = date('Y-m-d H:i:s');
         $db = Db::getInstance();
+        $senderIp = $_SERVER['REMOTE_ADDR'];
         $user = $db->login($email, $password);
         if ($user) {
-            $db->createAttempt(true);
+            $successful = true;
+            $db->createAttempt($email,$successful,$date,$senderIp);
             $_SESSION[USER] = $user;
             header('location:?controller=users&action=home', true);
         } else
-            $db->createAttempt(false);;
+        {
+            $successful = false;
+            $db->createAttempt($email,$successful,$date,$senderIp);
+        }
     }
 
     public function logout()
