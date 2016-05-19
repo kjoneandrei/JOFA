@@ -28,7 +28,7 @@ class Db extends PDO
         return $userName;
     }
 
-    public function loadUserByID($userID)
+    public function loadUserById($userID)
     {
         $sth = $this->prepare("SELECT * FROM user WHERE ID=?");
         $sth->execute(array($userID));
@@ -150,10 +150,30 @@ class Db extends PDO
         return $result;
     }
 
+    public function loadSenderByMessage($message)
+    {
+        $this->loadUserById($message->getSenderId());
+    }
+
+    public function loadRecipientByMessage($message)
+    {
+        $this->loadUserById($message->getRecipientId());
+    }
+
     function generateMessageID()
     {
         return trim($this->generateGUID(), '{}');
     }
+    
+    /*
+     * AttemptManager
+     */
+
+    public function createAttempt()
+    {
+      
+    }
+    
 }
 
 ?>

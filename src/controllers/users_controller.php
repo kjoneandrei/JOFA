@@ -32,9 +32,11 @@ class UsersController
         $db = Db::getInstance();
         $user = $db->login($email, $password);
         if ($user) {
+            $db->createAttempt(true);
             $_SESSION[USER] = $user;
             header('location:?controller=users&action=home', true);
-        } else ;
+        } else
+            $db->createAttempt(false);;
     }
 
     public function logout()
