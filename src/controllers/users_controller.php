@@ -2,6 +2,8 @@
 
 require_once('models/user.php');
 require_once('models/message.php');
+require_once('models/attempt.php');
+
 
 /**
  * Created by PhpStorm.
@@ -33,15 +35,22 @@ class UsersController
         $db = Db::getInstance();
         $senderIp = $_SERVER['REMOTE_ADDR'];
         $user = $db->login($email, $password);
-        if ($user) {
-            $successful = true;
-            $db->createAttempt($email,$successful,$date,$senderIp);
-            $_SESSION[USER] = $user;
-            header('location:?controller=users&action=home', true);
-        } else
-        {
-            $successful = false;
-            $db->createAttempt($email,$successful,$date,$senderIp);
+        $attempts = $db->retriveAttepmtsByUser($email);
+        $attemptsCount = count($attempts);
+        if ($attemptsCount>=3){
+            $db->createAttempt($email, 0, $date, $senderIp);
+            return $this->error();
+        }
+        else {
+            if ($user) {
+                $successful = true;
+                $db->createAttempt($email, $successful, $date, $senderIp);
+                $_SESSION[USER] = $user;
+                header('location:?controller=users&action=home', true);
+            } else {
+                $successful = false;
+                $db->createAttempt($email, $successful, $date, $senderIp);
+            }
         }
     }
 

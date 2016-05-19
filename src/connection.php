@@ -180,6 +180,26 @@ class Db extends PDO
         $statement->execute(array($senderEmail, $date, $successful, $senderIp));
     }
 
+
+
+    public function retriveAttepmtsByUser($userEmail){
+        $date = date('Y-m-d H:i:s', strtotime('-1 hour'));
+
+    $statement = $this->prepare("SELECT * FROM attempt WHERE USER_EMAIL=? AND SUCCESSFUL=0 AND  DATE>? ");
+    $statement->execute(array($userEmail,$date));
+    return $this->attemptFetcher($statement);
+
+    }
+
+    private function attemptFetcher($statement){
+    $result = [];
+
+    while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+        array_push($result,Attempt::fromRow($row));
+    }
+
+    return $result;
+    }
 }
 
 ?>

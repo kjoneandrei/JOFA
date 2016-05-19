@@ -27,3 +27,7 @@ define("RECIPIENT_USER_ID", "RECIPIENT_USER_ID");
 define("DATE", "DATE");
 define("MSG_HEADER", "MSG_HEADER");
 define("MSG_BODY", "MSG_BODY");
+//ATEMPT
+define("USER_EMAIL","USER_EMAIL");
+define("IP","IP");
+define("SUCCESSFUL","SUCCESSFUL");
