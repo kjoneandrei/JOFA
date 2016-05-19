@@ -15,6 +15,9 @@ class Message
     private $msg_header;
     private $msg_body;
 
+    private $sender;
+    private $recipient;
+
     /**
      * @return mixed
      */
@@ -62,6 +65,40 @@ class Message
     {
         return $this->msg_body;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getSender()
+    {
+        return $this->sender;
+    }
+
+    /**
+     * @param mixed $sender
+     */
+    public function setSender($sender)
+    {
+        $this->sender = $sender;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRecipient()
+    {
+        return $this->recipient;
+    }
+
+    /**
+     * @param mixed $recipient
+     */
+    public function setRecipient($recipient)
+    {
+        $this->recipient = $recipient;
+    }
+
+    
 
     public function __construct($id, $sender_id, $recipient_id, $date, $msg_header, $msg_body)
     {

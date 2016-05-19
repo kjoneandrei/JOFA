@@ -124,7 +124,7 @@ class Db extends PDO
         $id = $this->generateMessageID();
         $statement = $this->prepare("INSERT INTO message(ID, SENDER_USER_ID, RECIPIENT_USER_ID, DATE, MSG_HEADER, MSG_BODY)
     VALUES(?, ?, ?, ?, ?, ?)");
-        $statement->execute(array($id, $senderID, $recipientID,  date('Y-m-d H:i:s'), $msg_header, $msg_body));
+        $statement->execute(array($id, $senderID, $recipientID, date('Y-m-d H:i:s'), $msg_header, $msg_body));
         return $id;
     }
 
@@ -132,22 +132,14 @@ class Db extends PDO
     {
         $sth = $this->prepare("SELECT * FROM message WHERE RECIPIENT_USER_ID=?");
         $sth->execute(array($userID));
-        $result = [];
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            array_push($result, Message::fromRow($row));
-        }
-        return $result;
+        return $this->messageFetcher($sth);
     }
 
     public function loadMessageBySender($userID)
     {
         $sth = $this->prepare("SELECT * FROM message WHERE SENDER_USER_ID=?");
         $sth->execute(array($userID));
-        $result = [];
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            array_push($result, Message::fromRow($row));
-        }
-        return $result;
+        return $this->messageFetcher($sth);
     }
 
     public function loadSenderByMessage($message)
@@ -158,6 +150,18 @@ class Db extends PDO
     public function loadRecipientByMessage($message)
     {
         $this->loadUserById($message->getRecipientId());
+    }
+
+    private function messageFetcher($sth)
+    {
+        $result = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            $message = Message::fromRow($row);
+            $message->setSender($this->loadUserById($message->getSenderId()));
+            $message->setRecipient($this->loadUserById($message->getRecipientId()));
+            array_push($result, $message);
+        }
+        return $result;
     }
 
     function generateMessageID()
