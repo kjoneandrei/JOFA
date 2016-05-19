@@ -168,16 +168,18 @@ class Db extends PDO
     {
         return trim($this->generateGUID(), '{}');
     }
-    
+
     /*
      * AttemptManager
      */
 
-    public function createAttempt()
+    public function createAttempt($senderEmail, $date, $successful, $senderIp)
     {
-      
+        $statement = $this->prepare("INSERT INTO attempt(USER_EMAIL, SUCCESSFUL, DATE, IP)
+    VALUES(?, ?, ?, ?)");
+        $statement->execute(array($senderEmail, $date, $successful, $senderIp));
     }
-    
+
 }
 
 ?>
