@@ -55,10 +55,12 @@ class Db extends PDO
         }
     }
 
-    public function updateUser($user){
+    public function updateUser($user)
+    {
         $active = 1;
         $statement = $this->prepare("UPDATE user SET ACTIVE = ? WHERE ID = ?");
-        $statement->execute(array($active,$user->getId()));
+        $statement->execute(array($active, $user->getId()));
+    }
 
     public function loadAllUserNameId()
     {
@@ -222,6 +224,7 @@ class Db extends PDO
         return $result;
     }
 
-   
+
 }
+
 ?>
