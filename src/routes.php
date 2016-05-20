@@ -25,7 +25,7 @@ function call($controller, $action)
 // we consider those "allowed" values
 $controllers = array(
     'pages' => ['home', 'error'],
-    'users' => ['register', 'login', 'logout', 'home', 'goodbye', 'error','sendemail','verify'],
+    'users' => ['register', 'login', 'logout', 'home', 'goodbye', 'error','sendemail','verify','pictureUpload'],
     'messages' => ['newmessage', 'mymessages', 'sentmessages', 'error']);
 
 // check that the requested controller and action are both allowed
