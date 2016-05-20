@@ -135,10 +135,11 @@ class UsersController
         }
     }
 
-    public function pictureUpload($id)
+    public function pictureUpload()
     {
+        $id = $_SESSION[USER]->getId();
         $target_dir = "uploads/";
-        $target_file = $target_dir . basename($_FILES["fileToUpload"][$id]); //name of file changed to be user id
+        $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]); //name of file changed to be user id
         $uploadOk = 1;
         $imageFileType = pathinfo($target_file, PATHINFO_EXTENSION);
     // check if image file is a actual image or fake image

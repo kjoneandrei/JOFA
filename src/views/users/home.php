@@ -25,7 +25,7 @@
 
                     </div>
                     <div class="col-xs-12 col-sm-8">
-                        <form action="upload.php" method="post" enctype="multipart/form-data">
+                        <form action="?controller=users&action=pictureUpload" method="post" enctype="multipart/form-data">
                             Select new profile image:
                             <input type="file" name="fileToUpload" id="fileToUpload">
                             <input type="submit" value="Upload Image" name="submit">
