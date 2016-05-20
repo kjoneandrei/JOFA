@@ -14,8 +14,7 @@ class MessagesController
     public function newmessage()
     {
         $db = Db::getInstance();
-        $recipient = $db->loadUserByUsername($_POST["recipient"]);
-        $db->createMessage($_SESSION[USER]->getId(), $recipient->getId(), $_POST["header"], $_POST["body"]);
+        $db->createMessage($_SESSION[USER]->getId(), $_POST['recipient'], $_POST["header"], $_POST["body"]);
         header('location:?controller=messages&action=sentmessages');
     }
 
@@ -38,6 +37,7 @@ class MessagesController
         $messages = $db->loadMessageBySender($_SESSION[USER]->getId());
         require('views/messages/sentmessages.php');
     }
+
     /*
      * errors
      */

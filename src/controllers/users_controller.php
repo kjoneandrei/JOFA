@@ -39,11 +39,10 @@ class UsersController
         $user = $db->login($email, $password);
         $attempts = $db->retriveAttepmtsByUser($email);
         $attemptsCount = count($attempts);
-        if ($attemptsCount>=3){
+        if ($attemptsCount >= 3) {
             $db->createAttempt($email, 0, $date, $senderIp);
             return $this->error();
-        }
-        else {
+        } else {
             if ($user) {
                 $successful = true;
                 $db->createAttempt($email, $successful, $date, $senderIp);

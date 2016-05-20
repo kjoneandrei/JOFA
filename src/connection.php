@@ -60,6 +60,18 @@ class Db extends PDO
         $statement = $this->prepare("UPDATE user SET ACTIVE = ? WHERE ID = ?");
         $statement->execute(array($active,$user->getId()));
 
+    public function loadAllUserNameId()
+    {
+        $sth = $this->prepare("SELECT ID, USERNAME FROM user");
+        $sth->execute();
+        $result = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            $user = array(
+                "id" => htmlspecialchars($row[ID]),
+                "username" => htmlspecialchars($row[USERNAME]));
+            array_push($result, $user);
+        }
+        return $result;
     }
 
     public function createUser($email, $password, $username)
