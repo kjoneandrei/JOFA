@@ -58,9 +58,9 @@
     </div>
 
     <?php
-    include 'modals/login.phtml';
-    include 'modals/newmessage.html';
-    include 'modals/signup.html';
+    include 'users/login.phtml';
+    include 'messages/newmessage.html';
+    include 'users/signup.html';
     ?>
     </body>
     </html>

@@ -46,4 +46,8 @@ Please click this link to activate your account:
 https://188.166.167.52/?controller=users&action=verify&hash='.$hash;
  
 
+//Helper functions
+function echox($string)
+{
+    echo htmlspecialchars($string, ENT_QUOTES);
 }
