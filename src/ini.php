@@ -28,11 +28,12 @@ define("DATE", "DATE");
 define("MSG_HEADER", "MSG_HEADER");
 define("MSG_BODY", "MSG_BODY");
 //ATEMPT
-define("USER_EMAIL","USER_EMAIL");
-define("IP","IP");
-define("SUCCESSFUL","SUCCESSFUL");
+define("USER_EMAIL", "USER_EMAIL");
+define("IP", "IP");
+define("SUCCESSFUL", "SUCCESSFUL");
 
-function getEmailMsg($username,$email,$hash){
+function getEmailMsg($username, $email, $hash)
+{
     return '
  
 Thanks for signing up!
@@ -43,8 +44,8 @@ Username: ' . $username . '
 ------------------------
  
 Please click this link to activate your account:
-https://188.166.167.52/?controller=users&action=verify&hash='.$hash;
- 
+https://188.166.167.52/?controller=users&action=verify&hash=' . $hash;
+}
 
 //Helper functions
 function echox($string)
