@@ -59,10 +59,12 @@ class Db extends PDO
     {
         $id = $this->generateUserID();
         $hashed_password = $this->hash_password($password);
-        $active = 1;
+        $active = 0;
         $statement = $this->prepare("INSERT INTO user(ID, EMAIL, PASSWORD, USERNAME, ACTIVE)
     VALUES(?, ?, ?, ?, ?)");
         $statement->execute(array($id, $email, $hashed_password, $username, $active));
+        $this->verifyUserWithEmail($email, $username, $id);
+
         return $id;
     }
 
@@ -181,25 +183,78 @@ class Db extends PDO
     }
 
 
-
-    public function retriveAttepmtsByUser($userEmail){
+    public function retriveAttepmtsByUser($userEmail)
+    {
         $date = date('Y-m-d H:i:s', strtotime('-1 hour'));
 
-    $statement = $this->prepare("SELECT * FROM attempt WHERE USER_EMAIL=? AND SUCCESSFUL=0 AND  DATE>? ");
-    $statement->execute(array($userEmail,$date));
-    return $this->attemptFetcher($statement);
+        $statement = $this->prepare("SELECT * FROM attempt WHERE USER_EMAIL=? AND SUCCESSFUL=0 AND  DATE>? ");
+        $statement->execute(array($userEmail, $date));
+        return $this->attemptFetcher($statement);
 
     }
 
-    private function attemptFetcher($statement){
-    $result = [];
+    private function attemptFetcher($statement)
+    {
+        $result = [];
 
-    while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-        array_push($result,Attempt::fromRow($row));
+        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+            array_push($result, Attempt::fromRow($row));
+        }
+
+        return $result;
     }
 
-    return $result;
+    private function verifyUserWithEmail($email, $username, $hash)
+    {
+        $message = '
+ 
+Thanks for signing up!
+Your account has been created, you can login with the following credentials after you have activated your account by pressing the url below.
+ 
+------------------------
+Username: ' . $username . '
+------------------------
+ 
+Please click this link to activate your account:
+http://www.188.166.167.52.com/verify.php?email=' . $email . '&hash=' . $hash . '
+ 
+';
+
+        $mail = new PHPMailer;
+
+//$mail->SMTPDebug = 3;                               // Enable verbose debug output
+
+        $mail->isSMTP();                                      // Set mailer to use SMTP
+        $mail->Host = 'smtp.mail.yahoo.com';  // Specify main and backup SMTP servers
+        $mail->SMTPAuth = true;                               // Enable SMTP authentication
+        $mail->Username = 'noreplyjofa@yahoo.com';                 // SMTP username
+        $mail->Password = 'Password1234';                           // SMTP password
+        $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        $mail->Port = 587;                                    // TCP port to connect to
+
+        $mail->setFrom('noreplyjofa@yahoo.com', 'Verification Jofa account');
+        $mail->addAddress($email, $username);     // Add a recipient
+        $mail->addAddress($email);               // Name is optional
+        $mail->addReplyTo('info@example.com', 'Information');
+        $mail->addCC('cc@example.com');
+        $mail->addBCC('bcc@example.com');
+
+        $mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
+        $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+        $mail->isHTML(true);                                  // Set email format to HTML
+
+        $mail->Subject = 'Jofa Account Verification';
+        $mail->Body    = $message;
+        $mail->AltBody = $message;
+
+        if(!$mail->send()) {
+            echo 'Verification email could not be sent.';
+            echo 'Mailer Error: ' . $mail->ErrorInfo;
+        } else {
+            echo 'Your verification email has been sent. Please wait a few minutes and then activate your account';
+        }
+
+
     }
 }
-
 ?>
