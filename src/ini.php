@@ -31,3 +31,19 @@ define("MSG_BODY", "MSG_BODY");
 define("USER_EMAIL","USER_EMAIL");
 define("IP","IP");
 define("SUCCESSFUL","SUCCESSFUL");
+
+function getEmailMsg($username,$email,$hash){
+    return '
+ 
+Thanks for signing up!
+Your account has been created, you can login with the following credentials after you have activated your account by pressing the url below.
+ 
+------------------------
+Username: ' . $username . '
+------------------------
+ 
+Please click this link to activate your account:
+https://188.166.167.52/?controller=users&action=verify&hash='.$hash;
+ 
+
+}

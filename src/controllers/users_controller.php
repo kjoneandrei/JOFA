@@ -25,7 +25,8 @@ class UsersController
         $email = $_POST["email"];
         $password = $_POST["password"];
         $username = $_POST["username"];
-        $db->createUser($email, $password, $username);
+        $userIdToHash = $db->createUser($email, $password, $username);
+        $this->verifyUserWithEmail($email,$username,$userIdToHash);
     }
 
     public function login()
@@ -62,6 +63,13 @@ class UsersController
         header('location:?controller=users&action=goodbye&username=' . $username, true);
     }
 
+    public function verify(){
+        $db = DB::getInstance();
+        $user = $db->loadUserById($_GET["hash"]);
+
+        $db->updateUser($user);
+        echo "Succesfully activated your account";
+    }
     public function home()
     {
         require('views/users/home.php');
@@ -85,40 +93,46 @@ class UsersController
     {
         require('views/pages/error.php');
     }
+    
 
-   public function sendemail(){
-       $mail = new PHPMailer;
+    private function verifyUserWithEmail($email, $username, $hash)
+    {
+        $message = getEmailMsg($username,$email,$hash);
+
+        $mail = new PHPMailer;
 
 //$mail->SMTPDebug = 3;                               // Enable verbose debug output
 
-       $mail->isSMTP();                                      // Set mailer to use SMTP
-       $mail->Host = 'smtp.mail.yahoo.com';  // Specify main and backup SMTP servers
-       $mail->SMTPAuth = true;                               // Enable SMTP authentication
-       $mail->Username = 'noreplyjofa@yahoo.com';                 // SMTP username
-       $mail->Password = 'Password1234';                           // SMTP password
-       $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-       $mail->Port = 587;                                    // TCP port to connect to
+        $mail->isSMTP();                                      // Set mailer to use SMTP
+        $mail->Host = 'smtp.mail.yahoo.com';  // Specify main and backup SMTP servers
+        $mail->SMTPAuth = true;                               // Enable SMTP authentication
+        $mail->Username = 'noreplyjofa@yahoo.com';                 // SMTP username
+        $mail->Password = 'Password1234';                           // SMTP password
+        $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        $mail->Port = 587;                                    // TCP port to connect to
 
-       $mail->setFrom('noreplyjofa@yahoo.com', 'Mailer');
-       $mail->addAddress('andy_goal2007@yahoo.com', 'Joe User');     // Add a recipient
-       $mail->addAddress('andy_goal2007@yahoo.com');               // Name is optional
-       $mail->addReplyTo('info@example.com', 'Information');
-       $mail->addCC('cc@example.com');
-       $mail->addBCC('bcc@example.com');
+        $mail->setFrom('noreplyjofa@yahoo.com', 'Verification Jofa account');
+        $mail->addAddress($email, $username);     // Add a recipient
+        $mail->addAddress($email);               // Name is optional
+        $mail->addReplyTo('info@example.com', 'Information');
+        $mail->addCC('cc@example.com');
+        $mail->addBCC('bcc@example.com');
 
-       $mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
-       $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
-       $mail->isHTML(true);                                  // Set email format to HTML
+        $mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
+        $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+        $mail->isHTML(true);                                  // Set email format to HTML
 
-       $mail->Subject = 'Yahoo mail verification try';
-       $mail->Body    = 'This is the HTML message body <b>in bold!</b>';
-       $mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+        $mail->Subject = 'Jofa Account Verification';
+        $mail->Body    = $message;
+        $mail->AltBody = $message;
 
-       if(!$mail->send()) {
-           echo 'Message could not be sent.';
-           echo 'Mailer Error: ' . $mail->ErrorInfo;
-       } else {
-           echo 'Message has been sent';
-       }
-}
+        if(!$mail->send()) {
+            echo 'Verification email could not be sent.';
+            echo 'Mailer Error: ' . $mail->ErrorInfo;
+        } else {
+            echo 'Your verification email has been sent. Please wait a few minutes and then activate your account';
+        }
+
+
+    }
 }
