@@ -31,6 +31,9 @@
                 </div>
                 <ul class="nav navbar-nav navbar-right">
                     <?php if (isset($_SESSION[USER])) {
+                        if ($_SESSION[USER]->isAdmin()) {
+                            echo '<li><a href="?controller=users&action=listusers"><span class="glyphicon glyphicon-remove"></span> Ban Hammer</a></li>';
+                        }
                         echo '<li><a data-toggle="modal" data-target="#newmessage-modal" onclick="loadUserNameId()"><span class="glyphicon glyphicon-plus"></span> New message</a></li>';
                         echo '<li><a href="?controller=messages&action=sentmessages"><span class="glyphicon glyphicon-list-alt"></span> Sent Messages</a></li>';
                         echo '<li><a href="?controller=messages&action=mymessages"><span class="glyphicon glyphicon-envelope"></span> My messages</a></li>';

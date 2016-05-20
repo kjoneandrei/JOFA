@@ -109,6 +109,12 @@ class Message
         $this->msg_header = $msg_header;
         $this->msg_body = $msg_body;
     }
+
+    public static function fromRow($row)
+    {
+        $instance = new self($row[ID], $row[SENDER_USER_ID], $row[RECIPIENT_USER_ID], $row[DATE], $row[MSG_HEADER], $row[MSG_BODY]);
+        return $instance;
+    }
     
 
 

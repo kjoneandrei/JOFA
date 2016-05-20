@@ -14,6 +14,23 @@ class User
     private $username;
     private $active;
 
+    private $roles;
+
+    public function __construct($id, $email, $password, $username, $active)
+    {
+        $this->id = $id;
+        $this->email = $email;
+        $this->password = $password;
+        $this->username = $username;
+        $this->active = $active;
+    }
+
+    public static function fromRow($row)
+    {
+        $instance = new self($row[ID], $row[EMAIL], $row[PASSWORD], $row[USERNAME], $row[ACTIVE]);
+        return $instance;
+    }
+
     /**
      * @return mixed
      */
@@ -54,19 +71,14 @@ class User
         return $this->active;
     }
 
-    public function __construct($id, $email, $password, $username, $active)
+    public function setRoles($roles)
     {
-        $this->id = $id;
-        $this->email = $email;
-        $this->password = $password;
-        $this->username = $username;
-        $this->active = $active;
+        $this->roles = $roles;
     }
 
-    public static function fromRow($row)
+    public function isAdmin()
     {
-        $instance = new self($row[ID], $row[EMAIL], $row[PASSWORD], $row[USERNAME], $row[ACTIVE]);
-        return $instance;
+        return in_array(ADMIN_R, $this->roles);
     }
 
 

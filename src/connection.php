@@ -28,15 +28,6 @@ class Db extends PDO
         return $userName;
     }
 
-    public function loadUserById($userID)
-    {
-        $sth = $this->prepare("SELECT * FROM user WHERE ID=?");
-        $sth->execute(array($userID));
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            return User::fromRow($row);
-        }
-    }
-
     public function loadUserByUsername($username)
     {
         $sth = $this->prepare("SELECT * FROM user WHERE USERNAME=?");
@@ -46,20 +37,11 @@ class Db extends PDO
         }
     }
 
-    public function loadUserByEmail($userEmail)
-    {
-        $sth = $this->prepare("SELECT * FROM user WHERE EMAIL=?");
-        $sth->execute(array($userEmail));
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            return User::fromRow($row);
-        }
-    }
-
     public function updateUser($user)
     {
         $active = 1;
-        $statement = $this->prepare("UPDATE user SET ACTIVE = ? WHERE ID = ?");
-        $statement->execute(array($active, $user->getId()));
+        $sth = $this->prepare("UPDATE user SET ACTIVE = ? WHERE ID = ?");
+        $sth->execute(array($active, $user->getId()));
     }
 
     public function loadAllUserNameId()
@@ -81,26 +63,11 @@ class Db extends PDO
         $id = $this->generateUserID();
         $hashed_password = $this->hash_password($password);
         $active = 0;
-        $statement = $this->prepare("INSERT INTO user(ID, EMAIL, PASSWORD, USERNAME, ACTIVE)
+        $sth = $this->prepare("INSERT INTO user(ID, EMAIL, PASSWORD, USERNAME, ACTIVE)
     VALUES(?, ?, ?, ?, ?)");
-        $statement->execute(array($id, $email, $hashed_password, $username, $active));
-
+        $sth->execute(array($id, $email, $hashed_password, $username, $active));
+        createRole($id);
         return $id;
-    }
-
-    public function deleteUser($id)
-    {
-        $sth = $this->prepare("DELETE FROM user WHERE ID=?");
-        $sth->execute(array($id));
-    }
-
-    function hash_password($plainpw)
-    {
-        $options = [
-            'cost' => 12,
-        ];
-        $hashed_password = password_hash($plainpw, PASSWORD_BCRYPT, $options) . "\n";
-        return $hashed_password;
     }
 
     function generateUserID()
@@ -127,6 +94,21 @@ class Db extends PDO
         }
     }
 
+    function hash_password($plainpw)
+    {
+        $options = [
+            'cost' => 12,
+        ];
+        $hashed_password = password_hash($plainpw, PASSWORD_BCRYPT, $options) . "\n";
+        return $hashed_password;
+    }
+
+    public function deleteUser($id)
+    {
+        $sth = $this->prepare("DELETE FROM user WHERE ID=?");
+        $sth->execute(array($id));
+    }
+
     function login($email, $password)
     {
         $user = $this->loadUserByEmail($email);
@@ -137,17 +119,33 @@ class Db extends PDO
         }
     }
 
-    /*
-     * MessageManager
-     */
+    public function loadUserByEmail($userEmail)
+    {
+        $sth = $this->prepare("SELECT * FROM user WHERE EMAIL=?");
+        $sth->execute(array($userEmail));
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            $user = User::fromRow($row);
+            $user->setRoles($this->loadRoles($user->getId()));
+            return $user;
+        }
+    }
 
     public function createMessage($senderID, $recipientID, $msg_header, $msg_body)
     {
         $id = $this->generateMessageID();
-        $statement = $this->prepare("INSERT INTO message(ID, SENDER_USER_ID, RECIPIENT_USER_ID, DATE, MSG_HEADER, MSG_BODY)
+        $sth = $this->prepare("INSERT INTO message(ID, SENDER_USER_ID, RECIPIENT_USER_ID, DATE, MSG_HEADER, MSG_BODY)
     VALUES(?, ?, ?, ?, ?, ?)");
-        $statement->execute(array($id, $senderID, $recipientID, date('Y-m-d H:i:s'), $msg_header, $msg_body));
+        $sth->execute(array($id, $senderID, $recipientID, date('Y-m-d H:i:s'), $msg_header, $msg_body));
         return $id;
+    }
+
+    /*
+     * MessageManager
+     */
+
+    function generateMessageID()
+    {
+        return trim($this->generateGUID(), '{}');
     }
 
     public function loadMessageByUser($userID)
@@ -155,6 +153,27 @@ class Db extends PDO
         $sth = $this->prepare("SELECT * FROM message WHERE RECIPIENT_USER_ID=?");
         $sth->execute(array($userID));
         return $this->messageFetcher($sth);
+    }
+
+    private function messageFetcher($sth)
+    {
+        $result = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            $message = Message::fromRow($row);
+            $message->setSender($this->loadUserById($message->getSenderId()));
+            $message->setRecipient($this->loadUserById($message->getRecipientId()));
+            array_push($result, $message);
+        }
+        return $result;
+    }
+
+    public function loadUserById($userID)
+    {
+        $sth = $this->prepare("SELECT * FROM user WHERE ID=?");
+        $sth->execute(array($userID));
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            return User::fromRow($row);
+        }
     }
 
     public function loadMessageBySender($userID)
@@ -174,21 +193,39 @@ class Db extends PDO
         $this->loadUserById($message->getRecipientId());
     }
 
-    private function messageFetcher($sth)
+    /*
+     * RoleManager
+     */
+
+    public function createRole($userId, $role)
     {
-        $result = [];
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            $message = Message::fromRow($row);
-            $message->setSender($this->loadUserById($message->getSenderId()));
-            $message->setRecipient($this->loadUserById($message->getRecipientId()));
-            array_push($result, $message);
-        }
-        return $result;
+        $sth = $this->prepare("INSERT INTO role VALUES(?, ?)");
+        $sth->execute(array($userId, $role));
     }
 
-    function generateMessageID()
+    public function isAdmin($userId)
     {
-        return trim($this->generateGUID(), '{}');
+        $sth = $this->prepare("SELECT * from role WHERE USER_ID = ? AND ROLE = ?");
+        $sth->execute(array($userId, ADMIN_R));
+        return $sth->rowCount() > 0;
+
+    }
+
+    public function loadRoles($userId)
+    {
+        $sth = $this->prepare("SELECT * from role WHERE USER_ID = ?");
+        $sth->execute(array($userId));
+        return $this->roleFetcher($sth);
+
+    }
+
+    private function roleFetcher($sth)
+    {
+        $roles = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            array_push($roles, $row[ROLE]);
+        }
+        return $roles;
     }
 
     /*
@@ -197,27 +234,27 @@ class Db extends PDO
 
     public function createAttempt($senderEmail, $date, $successful, $senderIp)
     {
-        $statement = $this->prepare("INSERT INTO attempt(USER_EMAIL, SUCCESSFUL, DATE, IP)
+        $sth = $this->prepare("INSERT INTO attempt(USER_EMAIL, SUCCESSFUL, DATE, IP)
     VALUES(?, ?, ?, ?)");
-        $statement->execute(array($senderEmail, $date, $successful, $senderIp));
+        $sth->execute(array($senderEmail, $date, $successful, $senderIp));
     }
 
 
-    public function retriveAttepmtsByUser($userEmail)
+    public function loadAttepmtsByUser($userEmail)
     {
         $date = date('Y-m-d H:i:s', strtotime('-1 hour'));
 
-        $statement = $this->prepare("SELECT * FROM attempt WHERE USER_EMAIL=? AND SUCCESSFUL=0 AND  DATE>? ");
-        $statement->execute(array($userEmail, $date));
-        return $this->attemptFetcher($statement);
+        $sth = $this->prepare("SELECT * FROM attempt WHERE USER_EMAIL=? AND SUCCESSFUL=0 AND  DATE>? ");
+        $sth->execute(array($userEmail, $date));
+        return $this->attemptFetcher($sth);
 
     }
 
-    private function attemptFetcher($statement)
+    private function attemptFetcher($sth)
     {
         $result = [];
 
-        while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
             array_push($result, Attempt::fromRow($row));
         }
 

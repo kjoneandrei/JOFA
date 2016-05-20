@@ -26,77 +26,17 @@ class UsersController
         $password = $_POST["password"];
         $username = $_POST["username"];
         $userIdToHash = $db->createUser($email, $password, $username);
-        $this->verifyUserWithEmail($email,$username,$userIdToHash);
-    }
-
-    public function login()
-    {
-        $email = $_POST["email"];
-        $password = $_POST["password"];
-        $date = date('Y-m-d H:i:s');
-        $db = Db::getInstance();
-        $senderIp = $_SERVER['REMOTE_ADDR'];
-        $user = $db->login($email, $password);
-        $attempts = $db->retriveAttepmtsByUser($email);
-        $attemptsCount = count($attempts);
-        if ($attemptsCount >= 3) {
-            $db->createAttempt($email, 0, $date, $senderIp);
-            return $this->error();
-        } else {
-            if ($user) {
-                $successful = true;
-                $db->createAttempt($email, $successful, $date, $senderIp);
-                $_SESSION[USER] = $user;
-                header('location:?controller=users&action=home', true);
-            } else {
-                $successful = false;
-                $db->createAttempt($email, $successful, $date, $senderIp);
-            }
-        }
-    }
-
-    public function logout()
-    {
-        $username = $_SESSION[USER]->getUsername();
-        session_destroy();
-        header('location:?controller=users&action=goodbye&username=' . $username, true);
-    }
-
-    public function verify(){
-        $db = DB::getInstance();
-        $user = $db->loadUserById($_GET["hash"]);
-
-        $db->updateUser($user);
-        echo "Succesfully activated your account";
-    }
-    public function home()
-    {
-        require('views/users/home.php');
-    }
-
-    public function goodbye()
-    {
-        $username = $_GET['username'];
-        require 'views/users/goodbye.php';
-    }
-
-    /*
-     * errors
-     */
-    public function invalidLoginInfo()
-    {
-        require('views/users/invalid.php');
+        $this->verifyUserWithEmail($email, $username, $userIdToHash);
     }
 
     public function error()
     {
         require('views/pages/error.php');
     }
-    
 
     private function verifyUserWithEmail($email, $username, $hash)
     {
-        $message = getEmailMsg($username,$email,$hash);
+        $message = getEmailMsg($username, $email, $hash);
 
         $mail = new PHPMailer;
 
@@ -122,10 +62,10 @@ class UsersController
         $mail->isHTML(true);                                  // Set email format to HTML
 
         $mail->Subject = 'Jofa Account Verification';
-        $mail->Body    = $message;
+        $mail->Body = $message;
         $mail->AltBody = $message;
 
-        if(!$mail->send()) {
+        if (!$mail->send()) {
             echo 'Verification email could not be sent.';
             echo 'Mailer Error: ' . $mail->ErrorInfo;
         } else {
@@ -133,5 +73,79 @@ class UsersController
         }
 
 
+    }
+
+    public function login()
+    {
+        $email = $_POST["email"];
+        $password = $_POST["password"];
+        $date = date('Y-m-d H:i:s');
+        $db = Db::getInstance();
+        $senderIp = $_SERVER['REMOTE_ADDR'];
+        $user = $db->login($email, $password);
+        $attempts = $db->loadAttepmtsByUser($email);
+        $attemptsCount = count($attempts);
+        if ($attemptsCount >= 3) {
+            $db->createAttempt($email, 0, $date, $senderIp);
+            return $this->error();
+        } else {
+            if ($user) {
+                $successful = true;
+                $db->createAttempt($email, $successful, $date, $senderIp);
+                $_SESSION[USER] = $user;
+                header('location:?controller=users&action=home', true);
+            } else {
+                $successful = false;
+                $db->createAttempt($email, $successful, $date, $senderIp);
+            }
+        }
+    }
+
+    public function logout()
+    {
+        $username = $_SESSION[USER]->getUsername();
+        session_destroy();
+        header('location:?controller=users&action=goodbye&username=' . $username, true);
+    }
+
+    public function verify()
+    {
+        $db = DB::getInstance();
+        $user = $db->loadUserById($_GET["hash"]);
+
+        $db->updateUser($user);
+        echo "Succesfully activated your account";
+    }
+
+    public function listUsers()
+    {
+        if ($_SESSION[USER]->isAdmin()) {
+            require 'views/users/listUsers.php';
+        } else $this->permissionDenied();
+    }
+
+    /*
+     * errors
+     */
+
+    public function permissionDenied()
+    {
+        require('views/pages/permissiondenied.php');
+    }
+
+    public function home()
+    {
+        require('views/users/home.php');
+    }
+
+    public function goodbye()
+    {
+        $username = $_GET['username'];
+        require 'views/users/goodbye.php';
+    }
+
+    public function invalidLoginInfo()
+    {
+        require('views/users/invalid.php');
     }
 }

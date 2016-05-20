@@ -11,7 +11,7 @@ class PagesController
 
     public function error()
     {
-        require('views/pages/error.php');
+        require('views/pages/permissiondenied.php');
     }
 }
 
