@@ -1,8 +1,14 @@
 <?php
+session_start();
+if (!isset($_SESSION[USER])) {
+    echo 'NO';
+    exit;
+}
+
 if (is_ajax()) {
     require_once 'ini.php';
     require_once 'connection.php';
-    
+
     if (isset($_POST["action"]) && !empty($_POST["action"])) { //Checks if action value exists
         $action = $_POST["action"];
         switch ($action) { //Switch case for value of action
