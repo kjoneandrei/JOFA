@@ -28,7 +28,7 @@ function call($controller, $action)
 // we consider those "allowed" values
 $controllers = array(
     'pages' => ['home', 'error'],
-    'users' => ['register', 'login', 'logout', 'home', 'goodbye', 'sendemail', 'error', 'verify'],
+    'users' => ['register', 'login', 'logout', 'home', 'goodbye', 'sendemail', 'pictureUpload', 'error', 'verify'],
     'admins' => ['listusers', 'ban', 'unban'],
     'messages' => ['newmessage', 'mymessages', 'sentmessages', 'error']);
 
