@@ -72,11 +72,17 @@ class Db extends PDO
         return $roles;
     }
 
-    public function updateUser($user)
+    public function activateUser($user)
     {
         $active = 1;
         $sth = $this->prepare("UPDATE user SET ACTIVE = ? WHERE ID = ?");
         $sth->execute(array($active, $user->getId()));
+    }
+
+    public function setUserImgPath($user)
+    {
+        $sth = $this->prepare("UPDATE user SET IMGPATH = ? WHERE ID = ?");
+        $sth->execute(array($user->getImgPath(), $user->getId()));
     }
 
     public function banUser($userId)

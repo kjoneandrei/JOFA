@@ -1,7 +1,7 @@
 <?php /** @var User $user */ ?>
 <tr>
     <td class="col-xs-2">
-        <img src="uploads/<?php echo $user->getImgPath(); ?>" alt="">
+        <img class="center-block img-circle img-responsive" src="uploads/<?php echo $user->getImgPath(); ?>" alt="">
         <a href="#" class="user-link"></a>
         <span class="user-subhead"></span>
     </td>

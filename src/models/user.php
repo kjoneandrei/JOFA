@@ -36,6 +36,11 @@ class User
         return $instance;
     }
 
+    public function setImgpath($imgpath)
+    {
+        $this->imgpath = $imgpath;
+    }
+
     /**
      * @return mixed
      */

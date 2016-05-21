@@ -29,77 +29,10 @@ class UsersController
         $this->verifyUserWithEmail($email, $username, $userIdToHash);
     }
 
-    public function login()
-    {
-        $email = $_POST["email"];
-        $password = $_POST["password"];
-        $date = date('Y-m-d H:i:s');
-        $db = Db::getInstance();
-        $senderIp = $_SERVER['REMOTE_ADDR'];
-        $user = $db->login($email, $password);
-
-        if ($db->isUserBlocked($email)) {
-            $db->createAttempt($email, 0, $date, $senderIp);
-            return $this->error();
-        } else {
-            if ($user) {
-                $successful = true;
-                $db->createAttempt($email, $successful, $date, $senderIp);
-                $_SESSION[USER] = $user;
-                header('location:?controller=users&action=home', true);
-            } else {
-                $successful = false;
-                $db->createAttempt($email, $successful, $date, $senderIp);
-            }
-        }
-    }
-
-    public function logout()
-    {
-        $username = $_SESSION[USER]->getUsername();
-        session_destroy();
-        header('location:?controller=users&action=goodbye&username=' . $username, true);
-    }
-
-    public function verify()
-    {
-        $db = DB::getInstance();
-        $user = $db->loadUserById($_GET["hash"]);
-
-        $db->updateUser($user);
-        echo "Succesfully activated your account";
-    }
-
-    /*
-     * errors
-     */
-
-    public function permissionDenied()
-    {
-        require('views/pages/permissiondenied.php');
-    }
-
-    public function home()
-    {
-        require('views/users/home.php');
-    }
-
-    public function goodbye()
-    {
-        $username = $_GET['username'];
-        require 'views/users/goodbye.php';
-    }
-
-    public function invalidLoginInfo()
-    {
-        require('views/users/invalid.php');
-    }
-
     public function error()
     {
         require('views/pages/error.php');
     }
-
 
     private function verifyUserWithEmail($email, $username, $hash)
     {
@@ -140,44 +73,106 @@ class UsersController
         }
     }
 
+    public function login()
+    {
+        $email = $_POST["email"];
+        $password = $_POST["password"];
+        $date = date('Y-m-d H:i:s');
+        $db = Db::getInstance();
+        $senderIp = $_SERVER['REMOTE_ADDR'];
+        $user = $db->login($email, $password);
+
+        if ($db->isUserBlocked($email)) {
+            $db->createAttempt($email, 0, $date, $senderIp);
+            return $this->error();
+        } else {
+            if ($user) {
+                $successful = true;
+                $db->createAttempt($email, $successful, $date, $senderIp);
+                $_SESSION[USER] = $user;
+                header('location:?controller=users&action=home', true);
+            } else {
+                $successful = false;
+                $db->createAttempt($email, $successful, $date, $senderIp);
+            }
+        }
+    }
+
+    /*
+     * errors
+     */
+
+    public function logout()
+    {
+        $username = $_SESSION[USER]->getUsername();
+        session_destroy();
+        header('location:?controller=users&action=goodbye&username=' . $username, true);
+    }
+
+    public function verify()
+    {
+        $db = DB::getInstance();
+        $user = $db->loadUserById($_GET["hash"]);
+
+        $db->updateUser($user);
+        echo "Succesfully activated your account";
+    }
+
+    public function permissionDenied()
+    {
+        require('views/pages/permissiondenied.php');
+    }
+
+    public function home()
+    {
+        require('views/users/home.php');
+    }
+
+    public function goodbye()
+    {
+        $username = $_GET['username'];
+        require 'views/users/goodbye.php';
+    }
+
+    public function invalidLoginInfo()
+    {
+        require('views/users/invalid.php');
+    }
+
     public function pictureUpload()
     {
         $id = $_SESSION[USER]->getId();
-        $imageFileType = pathinfo($_FILES['fileToUpload']['name'],PATHINFO_EXTENSION);
+        $imageFileType = pathinfo($_FILES['fileToUpload']['name'], PATHINFO_EXTENSION);
 
         //if they DID upload a file...
-        if($_FILES['fileToUpload']['name'])
-        {
+        if ($_FILES['fileToUpload']['name']) {
             //if no errors...
-            if(!$_FILES['fileToUpload']['error'])
-            {
+            if (!$_FILES['fileToUpload']['error']) {
                 //now is the time to modify the future file name and validate the file
-                $new_file_name = $id . "." . $imageFileType ; //rename file
-                if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-                    && $imageFileType != "gif" ) {
+                $new_file_name = $id . "." . $imageFileType; //rename file
+                if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+                    && $imageFileType != "gif"
+                ) {
                     echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
                     $valid_file = false;
-                }
-                else{
+                } else {
                     $valid_file = true;
                 }
                 //if the file has passed the test
-                if($valid_file)
-                {
+                if ($valid_file) {
                     //move it to where we want it to be
-                    move_uploaded_file($_FILES['fileToUpload']['tmp_name'], 'uploads/'.$new_file_name);
-                     echo 'Congratulations!  Your file was accepted.';
+                    move_uploaded_file($_FILES['fileToUpload']['tmp_name'], 'uploads/' . $new_file_name);
+                    echo 'Congratulations!  Your file was accepted.';
                 }
-            }
-            //if there is an error...
-            else
-            {
+                $_SESSION[USER]->setImgPath($new_file_name);
+                Db::getInstance()->setUserImgPath($_SESSION[USER]);
+            } //if there is an error...
+            else {
                 //set that to be the returned message
-                echo 'Ooops!  Your upload triggered the following error:  '.$_FILES['fileToUpload']['error'];
+                echo 'Ooops!  Your upload triggered the following error:  ' . $_FILES['fileToUpload']['error'];
             }
         }
-        }
-    
+    }
 
 
 }

@@ -5,8 +5,8 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-xs-12 col-sm-4 text-center">
-                        <img src="http://api.randomuser.me/portraits/men/49.jpg" alt=""
-                             class="center-block img-circle img-responsive">
+                        <img src="uploads/<?php echo $_SESSION[USER]->getImgPath(); ?>" alt=""
+                             class="center-block img-circle img-responsive profile-picture">
                         <ul class="list-inline ratings text-center" title="Ratings">
                             <li><a href="#"><span class="fa fa-star fa-lg"></span></a></li>
                             <li><a href="#"><span class="fa fa-star fa-lg"></span></a></li>
@@ -25,14 +25,15 @@
 
                     </div>
                     <div class="col-xs-12 col-sm-8">
-                        <form action="?controller=users&action=pictureUpload" method="post" enctype="multipart/form-data">
-                            Select new profile image:
-                            <input type="file" name="fileToUpload" id="fileToUpload">
-                            <input type="submit" value="Upload Image" name="submit">
+                        <form action="?controller=users&action=pictureUpload" method="post"
+                              enctype="multipart/form-data">
+                            <p>Select new (recommended: 100x100) profile image:</p>
+                            <div class="form-group"><input type="file" name="fileToUpload" id="fileToUpload"></div>
+                            <div class="form-group"><input type="submit" value="Upload Image" name="submit"></div>
                         </form>
-                  
 
-                    <!--/col-->
+
+                        <!--/col-->
                     </div>
                 </div><!--/row-->
             </div><!--/panel-body-->
