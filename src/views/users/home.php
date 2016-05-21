@@ -1,9 +1,43 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: Ferenc_S
- * Date: 5/16/2016
- * Time: 5:19 PM
- */
+<div class="row">
+    <div class="col-md-6">
 
-echo 'Hi there, ' . $_SESSION[USER]->getUsername();
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 text-center">
+                        <img src="http://api.randomuser.me/portraits/men/49.jpg" alt=""
+                             class="center-block img-circle img-responsive">
+                        <ul class="list-inline ratings text-center" title="Ratings">
+                            <li><a href="#"><span class="fa fa-star fa-lg"></span></a></li>
+                            <li><a href="#"><span class="fa fa-star fa-lg"></span></a></li>
+                            <li><a href="#"><span class="fa fa-star fa-lg"></span></a></li>
+                            <li><a href="#"><span class="fa fa-star fa-lg"></span></a></li>
+                            <li><a href="#"><span class="fa fa-star fa-lg"></span></a></li>
+                        </ul>
+                    </div>
+                    <div class="col-xs-12 col-sm-8">
+                        <h2><?php
+                            echo $_SESSION[USER]->getUsername();
+                            ?></h2>
+                        <p><strong>Email: </strong> <?php
+                            echo $_SESSION[USER]->getEmail();
+                            ?></p>
+
+                    </div>
+                    <div class="col-xs-12 col-sm-8">
+                        <form action="?controller=users&action=pictureUpload" method="post" enctype="multipart/form-data">
+                            Select new profile image:
+                            <input type="file" name="fileToUpload" id="fileToUpload">
+                            <input type="submit" value="Upload Image" name="submit">
+                        </form>
+                  
+
+                    <!--/col-->
+                    </div>
+                </div><!--/row-->
+            </div><!--/panel-body-->
+        </div><!--/panel-->
+
+
+    </div>
+</div>
