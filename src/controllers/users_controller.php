@@ -147,7 +147,7 @@ class UsersController
             if(!$_FILES['fileToUpload']['error'])
             {
                 //now is the time to modify the future file name and validate the file
-                $new_file_name = $id; //rename file
+                $new_file_name = $id . "." . $imageFileType ; //rename file
                 if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
                     && $imageFileType != "gif" ) {
                     echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
