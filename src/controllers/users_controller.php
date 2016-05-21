@@ -107,12 +107,12 @@ class UsersController
         $mail->isSMTP();                                      // Set mailer to use SMTP
         $mail->Host = 'smtp.mail.yahoo.com';  // Specify main and backup SMTP servers
         $mail->SMTPAuth = true;                               // Enable SMTP authentication
-        $mail->Username = 'noreplyjofa@yahoo.com';                 // SMTP username
-        $mail->Password = 'Password1234';                           // SMTP password
+        $mail->Username = 'noreplyjofajofa@yahoo.com';                 // SMTP username
+        $mail->Password = 'ThisIsNotMyPassword1212';                           // SMTP password
         $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
         $mail->Port = 587;                                    // TCP port to connect to
 
-        $mail->setFrom('noreplyjofa@yahoo.com', 'Verification Jofa account');
+        $mail->setFrom('noreplyjofajofa@yahoo.com', 'Verification Jofa account');
         $mail->addAddress($email, $username);     // Add a recipient
         $mail->addAddress($email);               // Name is optional
         $mail->addReplyTo('info@example.com', 'Information');
