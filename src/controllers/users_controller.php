@@ -29,11 +29,6 @@ class UsersController
         $this->verifyUserWithEmail($email, $username, $userIdToHash);
     }
 
-    public function error()
-    {
-        require('views/pages/error.php');
-    }
-
     public function login()
     {
         $email = $_POST["email"];
