@@ -20,7 +20,9 @@ define("ID", "ID");
 define("EMAIL", "EMAIL");
 define("PASSWORD", "PASSWORD");
 define("USERNAME", "USERNAME");
+define("IMGPATH", "IMGPATH");
 define("ACTIVE", "ACTIVE");
+define("BANNED", "BANNED");
 // MESSAGE
 define("SENDER_USER_ID", "SENDER_USER_ID");
 define("RECIPIENT_USER_ID", "RECIPIENT_USER_ID");

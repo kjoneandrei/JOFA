@@ -37,11 +37,58 @@ class Db extends PDO
         }
     }
 
+    public function loadAllUsers()
+    {
+        $sth = $this->prepare("SELECT * FROM user");
+        $sth->execute();
+        return $this->userFetcher($sth);
+    }
+
+    private function userFetcher($sth)
+    {
+        $result = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            $user = User::fromRow($row);
+            $user->setRoles($this->loadRoles($user->getId()));
+            array_push($result, $user);
+        }
+        return $result;
+    }
+
+    public function loadRoles($userId)
+    {
+        $sth = $this->prepare("SELECT * from role WHERE USER_ID = ?");
+        $sth->execute(array($userId));
+        return $this->roleFetcher($sth);
+
+    }
+
+    private function roleFetcher($sth)
+    {
+        $roles = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            array_push($roles, $row[ROLE]);
+        }
+        return $roles;
+    }
+
     public function updateUser($user)
     {
         $active = 1;
         $sth = $this->prepare("UPDATE user SET ACTIVE = ? WHERE ID = ?");
         $sth->execute(array($active, $user->getId()));
+    }
+
+    public function banUser($userId)
+    {
+        $sth = $this->prepare("UPDATE user SET BANNED = ? WHERE ID = ?");
+        $sth->execute(array(1, $userId));
+    }
+
+    public function unbanUser($userId)
+    {
+        $sth = $this->prepare("UPDATE user SET BANNED = ? WHERE ID = ?");
+        $sth->execute(array(0, $userId));
     }
 
     public function loadAllUserNameId()
@@ -112,9 +159,19 @@ class Db extends PDO
     function login($email, $password)
     {
         $user = $this->loadUserByEmail($email);
+        if ($user->isBanned()) {
+            echo 'banned';
+            return false;
+        }
+        if (!$user->isActive()) {
+            echo 'inactive';
+            return false;
+        }
         if (password_verify($password, $user->getPassword())) {
+            echo 'user';
             return $user;
         } else {
+            echo 'wrongpass';
             return false;
         }
     }
@@ -123,12 +180,12 @@ class Db extends PDO
     {
         $sth = $this->prepare("SELECT * FROM user WHERE EMAIL=?");
         $sth->execute(array($userEmail));
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            $user = User::fromRow($row);
-            $user->setRoles($this->loadRoles($user->getId()));
-            return $user;
-        }
+        return $this->userFetcher($sth)[0];
     }
+
+    /*
+     * MessageManager
+     */
 
     public function createMessage($senderID, $recipientID, $msg_header, $msg_body)
     {
@@ -139,14 +196,11 @@ class Db extends PDO
         return $id;
     }
 
-    /*
-     * MessageManager
-     */
-
     function generateMessageID()
     {
         return trim($this->generateGUID(), '{}');
     }
+
 
     public function loadMessageByUser($userID)
     {
@@ -183,6 +237,10 @@ class Db extends PDO
         return $this->messageFetcher($sth);
     }
 
+    /*
+     * RoleManager
+     */
+
     public function loadSenderByMessage($message)
     {
         $this->loadUserById($message->getSenderId());
@@ -192,10 +250,6 @@ class Db extends PDO
     {
         $this->loadUserById($message->getRecipientId());
     }
-
-    /*
-     * RoleManager
-     */
 
     public function createRole($userId, $role)
     {
@@ -211,23 +265,6 @@ class Db extends PDO
 
     }
 
-    public function loadRoles($userId)
-    {
-        $sth = $this->prepare("SELECT * from role WHERE USER_ID = ?");
-        $sth->execute(array($userId));
-        return $this->roleFetcher($sth);
-
-    }
-
-    private function roleFetcher($sth)
-    {
-        $roles = [];
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            array_push($roles, $row[ROLE]);
-        }
-        return $roles;
-    }
-
     /*
      * AttemptManager
      */
@@ -239,14 +276,25 @@ class Db extends PDO
         $sth->execute(array($senderEmail, $date, $successful, $senderIp));
     }
 
-
-    public function loadAttepmtsByUser($userEmail)
+    public function isUserBlocked($userEmail)
     {
         $date = date('Y-m-d H:i:s', strtotime('-1 hour'));
 
-        $sth = $this->prepare("SELECT * FROM attempt WHERE USER_EMAIL=? AND SUCCESSFUL=0 AND  DATE>? ");
+        $sth = $this->prepare("SELECT * FROM attempt WHERE USER_EMAIL=? AND SUCCESSFUL=0 AND  DATE>? ORDER BY DATE DESC");
         $sth->execute(array($userEmail, $date));
-        return $this->attemptFetcher($sth);
+        $attempts = $this->attemptFetcher($sth);
+        $counter = 0;
+        foreach ($attempts as &$attempt) {
+            echo $attempt->getSuccessful();
+            if ($attempt->getSuccessful()) {
+                return false;
+            }
+            if (!$attempt->getSuccessful()) {
+                $counter++;
+                if ($counter >= 3) return true;
+            }
+        }
+        return false;
 
     }
 

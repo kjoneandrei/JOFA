@@ -83,9 +83,8 @@ class UsersController
         $db = Db::getInstance();
         $senderIp = $_SERVER['REMOTE_ADDR'];
         $user = $db->login($email, $password);
-        $attempts = $db->loadAttepmtsByUser($email);
-        $attemptsCount = count($attempts);
-        if ($attemptsCount >= 3) {
+
+        if ($db->isUserBlocked($email)) {
             $db->createAttempt($email, 0, $date, $senderIp);
             return $this->error();
         } else {
@@ -115,13 +114,6 @@ class UsersController
 
         $db->updateUser($user);
         echo "Succesfully activated your account";
-    }
-
-    public function listUsers()
-    {
-        if ($_SESSION[USER]->isAdmin()) {
-            require 'views/users/listUsers.php';
-        } else $this->permissionDenied();
     }
 
     /*

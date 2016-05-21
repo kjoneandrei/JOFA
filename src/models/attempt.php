@@ -10,23 +10,29 @@ class Attempt
 {
 
     private $userEmail;
+    private $successful;
     private $date;
     private $userIp;
-    private $succesful;
 
     /**
      * Attempt constructor.
-     * @param $succesful
-     * @param $userIp
-     * @param $date
      * @param $userEmail
+     * @param $date
+     * @param $userIp
+     * @param $successful
      */
-    public function __construct($succesful, $userIp, $date, $userEmail)
+    public function __construct($userEmail, $successful, $date, $userIp)
     {
-        $this->succesful = $succesful;
-        $this->userIp = $userIp;
-        $this->date = $date;
         $this->userEmail = $userEmail;
+        $this->successful = $successful;
+        $this->date = $date;
+        $this->userIp = $userIp;
+    }
+
+    public static function fromRow($row)
+    {
+        $instance = new self($row[USER_EMAIL], $row[SUCCESSFUL], $row[DATE], $row[IP]);
+        return $instance;
     }
 
     /**
@@ -80,23 +86,16 @@ class Attempt
     /**
      * @return mixed
      */
-    public function getSuccesful()
+    public function getSuccessful()
     {
-        return $this->succesful;
+        return $this->successful;
     }
 
     /**
-     * @param mixed $succesful
+     * @param mixed $successful
      */
-    public function setSuccesful($succesful)
+    public function setSuccessful($successful)
     {
-        $this->succesful = $succesful;
-    }
-
-
-    public static function fromRow($row)
-    {
-        $instance = new self($row[USER_EMAIL], $row[SUCCESSFUL], $row[DATE], $row[IP]);
-        return $instance;
+        $this->successful = $successful;
     }
 }

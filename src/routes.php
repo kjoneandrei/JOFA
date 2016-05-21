@@ -12,6 +12,9 @@ function call($controller, $action)
         case 'users':
             $controller = new UsersController();
             break;
+        case 'admins':
+            $controller = new AdminsController();
+            break;
         case 'messages':
             $controller = new MessagesController();
             break;
@@ -25,7 +28,8 @@ function call($controller, $action)
 // we consider those "allowed" values
 $controllers = array(
     'pages' => ['home', 'error'],
-    'users' => ['register', 'login', 'logout', 'home', 'goodbye', 'listusers', 'sendemail', 'error', 'verify'],
+    'users' => ['register', 'login', 'logout', 'home', 'goodbye', 'sendemail', 'error', 'verify'],
+    'admins' => ['listusers', 'ban', 'unban'],
     'messages' => ['newmessage', 'mymessages', 'sentmessages', 'error']);
 
 // check that the requested controller and action are both allowed
