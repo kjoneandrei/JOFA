@@ -26,47 +26,33 @@ class AdminsController
 
     public function listUsers()
     {
-        if ($this->isAdmin()) {
-            $users = $this->db->loadAllUsers();
-            require 'views/admins/listUsers.php';
-        } else $this->permissionDenied();
+        $this->verifyRequest();
+        $users = $this->db->loadAllUsers();
+        require 'views/admins/listUsers.php';
     }
 
     public function ban()
     {
-        if ($this->isAdmin()) {
-            $this->db->banUser($_GET['userid']);
-            header('location:?controller=admins&action=listusers', true);
-        }
+        $this->verifyRequest();
+        $this->db->banUser($_GET['userid']);
+        reloc('admins', 'listUsers');
     }
 
     public function unBan()
     {
-        if ($this->isAdmin()) {
-            $this->db->unbanUser($_GET['userid']);
-            header('location:?controller=admins&action=listusers', true);
+        $this->verifyRequest();
+        $this->db->unbanUser($_GET['userid']);
+        reloc('admins', 'listUsers');
+    }
+
+    private function verifyRequest()
+    {
+        if ($_SESSION[USER]->isAdmin() && $_GET[TOKEN] == $_SESSION[TOKEN])
+        {
+            return;
+        } else
+        {
+            reloc('pages', 'permissionDenied');
         }
-    }
-
-    public function permissionDenied()
-    {
-        require('views/pages/permissiondenied.php');
-    }
-
-    /*
-     * errors
-     */
-
-    public function home()
-    {
-        require('views/users/home.php');
-    }
-
-    /*
-     * helpers
-     */
-
-    private function isAdmin(){
-        return $_SESSION[USER]->isAdmin();
     }
 }

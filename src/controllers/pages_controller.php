@@ -2,6 +2,16 @@
 
 class PagesController
 {
+    public function verificationSent()
+    {
+        require 'views/pages/verificationsent.php';
+    }
+
+    public function verificationNotSent()
+    {
+        require 'views/pages/verificationnotsent.php';
+    }
+
     public function home()
     {
         require('views/pages/home.php');

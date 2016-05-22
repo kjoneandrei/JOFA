@@ -18,38 +18,46 @@ class MessagesController
         $this->db = Db::getInstance();
     }
 
-    public function newmessage()
+    public function newMessage()
     {
+        $this->verifyRequestCSRF();
         $this->db->createMessage($_SESSION[USER]->getId(), $_POST['recipient'], $_POST["header"], $_POST["body"]);
-        header('location:?controller=messages&action=sentmessages');
+        reloc('messages', 'sentMessages');
     }
-
-    public function mymessages()
+    public function myMessages()
     {
-        if (!isset($_SESSION[USER]))
-        {
-            return error;
-        }
+        $this->verifyRequest();
         $messages = $this->db->loadMessageByUser($_SESSION[USER]->getId());
         require('views/messages/mymessages.php');
     }
 
-    public function sentmessages()
+    public function sentMessages()
     {
-        if (!isset($_SESSION[USER]))
-        {
-            return error;
-        }
+        $this->verifyRequest();
         $messages = $this->db->loadMessageBySender($_SESSION[USER]->getId());
         require('views/messages/sentmessages.php');
     }
 
-    /*
-     * errors
-     */
-
-    public function error()
+    private function verifyRequestCSRF()
     {
-        require('views/pages/error.php');
+        $this->verifyRequest();
+        if ($_POST[TOKEN] == $_SESSION[TOKEN])
+        {
+            return;
+        } else
+        {
+            reloc('pages', 'permissionDenied');
+        }
+    }
+
+    private function verifyRequest()
+    {
+        if (isset($_SESSION[USER]))
+        {
+            return;
+        } else
+        {
+            reloc('pages', 'permissionDenied');
+        }
     }
 }

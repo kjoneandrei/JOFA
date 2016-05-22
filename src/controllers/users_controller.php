@@ -18,11 +18,7 @@ class UsersController
 
     public function register()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-        {
-            return $this->error();
-        }
-
+        $this->validateRegister();
         $email = $_POST["email"];
         $password = $_POST["password"];
         $username = $_POST["username"];
@@ -30,19 +26,19 @@ class UsersController
         $this->verifyUserWithEmail($email, $username, $userId);
     }
 
-    private function verifyUserWithEmail($email, $username, $hash)
+    private function verifyUserWithEmail($email, $username, $userId)
     {
-        $message = getEmailMsg($username, $email, $hash);
+        $message = getEmailMsg($username, $userId);
         $mail = new PHPMailer;
         require '../mailconfig.php';
 
-        if (!$mail->send())
+        if ($mail->send())
         {
-            echo 'Verification email could not be sent.';
-            error_log($mail->ErrorInfo);
+            reloc('pages', 'verificationSent');
         } else
         {
-            echo 'Your verification email has been sent. Please wait a few minutes and then activate your account';
+            reloc('pages', 'verificationNotSent');
+            error_log($mail->ErrorInfo);
         }
     }
 
@@ -58,7 +54,7 @@ class UsersController
         if ($db->isUserBlocked($email))
         {
             $db->createAttempt($email, 0, $date, $senderIp);
-            return $this->error();
+            reloc('pages', 'userlockedout');
         } else
         {
             if ($user)
@@ -66,12 +62,35 @@ class UsersController
                 $successful = true;
                 $db->createAttempt($email, $successful, $date, $senderIp);
                 $_SESSION[USER] = $user;
-                header('location:?controller=users&action=home', true);
+                $_SESSION["token"] = md5(uniqid(mt_rand(), true));
+                reloc('users', 'home');
             } else
             {
                 $successful = false;
                 $db->createAttempt($email, $successful, $date, $senderIp);
+                reloc('pages', 'invalidlogininfo');
             }
+        }
+    }
+
+    private function validateRegister()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+        {
+            reloc('pages', 'error');
+        }
+        if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL))
+        {
+            reloc('pages', 'error');
+        }
+
+        if (!preg_match('@[A-Z]@', $_POST["password"]) || !preg_match('@[a-z]@', $_POST["password"]) || preg_match('@[0-9]@', $_POST["password"]) || $_POST["password"] < 8)
+        {
+            reloc('pages', 'error');
+        }
+        if (preg_match('/^[A-Za-z0-9_-]+$/', $_POST["username"]))
+        {
+            reloc('pages', 'error');
         }
     }
 
@@ -82,22 +101,12 @@ class UsersController
         header('location:?controller=users&action=goodbye&username=' . $username, true);
     }
 
-    /*
-     * errors
-     */
-
     public function verify()
     {
         $db = DB::getInstance();
         $user = $db->loadUserById($_GET["hash"]);
-
-        $db->updateUser($user);
-        echo "Succesfully activated your account";
-    }
-
-    public function permissionDenied()
-    {
-        require('views/pages/permissiondenied.php');
+        $db->activateUser($user);
+        require 'views/pages/verificationsuccessful.php';
     }
 
     public function home()
@@ -155,11 +164,6 @@ class UsersController
                 echo 'Ooops!  Your upload triggered the following error:  ' . $_FILES['fileToUpload']['error'];
             }
         }
-    }
-
-    public function error()
-    {
-        require('views/pages/error.php');
     }
 
 }

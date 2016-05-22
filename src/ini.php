@@ -12,7 +12,10 @@ ini_set('file_uploads', 1);
 
 // App constants
 define('USER', 'USER');
+define('TOKEN', 'TOKEN');
+
 // DB constants
+
 // USER
 define("ID", "ID");
 define("EMAIL", "EMAIL");
@@ -37,7 +40,7 @@ define("USER_EMAIL", "USER_EMAIL");
 define("IP", "IP");
 define("SUCCESSFUL", "SUCCESSFUL");
 
-function getEmailMsg($username, $email, $hash)
+function getEmailMsg($username, $userId)
 {
     return '
  
@@ -49,11 +52,24 @@ Username: ' . $username . '
 ------------------------
  
 Please click this link to activate your account:
-https://188.166.167.52/?controller=users&action=verify&hash=' . $hash;
+https://188.166.167.52/?controller=users&action=verify&hash=' . $userId;
 }
 
 //Helper functions
 function echox($string)
 {
     echo htmlspecialchars($string, ENT_QUOTES);
+}
+
+function csrfTokenTest()
+{
+    if (!isset($_POST[TOKEN]) || $_POST[TOKEN] != $_SESSION[TOKEN])
+    {
+        header('location:?controller=pages&action=permissiondenied&reason=csrftoken');
+    }
+}
+
+function reloc($controller, $action)
+{
+    header('location:?controller=' . $controller . '&action=' . $action);
 }

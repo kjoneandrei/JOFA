@@ -8,7 +8,6 @@ $mail->SMTPSecure = 'tls';
 $mail->Port = 587;
 $mail->setFrom('noreplyjofajofa@yahoo.com', 'Verification Jofa account');
 $mail->addAddress($email, $username);
-$mail->addAddress($email);
 $mail->isHTML(true);
 
 $mail->Subject = 'Jofa Account Verification';
