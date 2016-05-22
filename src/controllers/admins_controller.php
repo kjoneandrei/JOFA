@@ -24,22 +24,17 @@ class AdminsController
         $this->db = Db::getInstance();
     }
 
-    public function listusers()
+    public function listUsers()
     {
-        if ($_SESSION[USER]->isAdmin()) {
+        if ($this->isAdmin()) {
             $users = $this->db->loadAllUsers();
             require 'views/admins/listUsers.php';
         } else $this->permissionDenied();
     }
 
-    public function permissionDenied()
-    {
-        require('views/pages/permissiondenied.php');
-    }
-
     public function ban()
     {
-        if ($_SESSION[USER]->isAdmin()) {
+        if ($this->isAdmin()) {
             $this->db->banUser($_GET['userid']);
             header('location:?controller=admins&action=listusers', true);
         }
@@ -47,10 +42,15 @@ class AdminsController
 
     public function unBan()
     {
-        if ($_SESSION[USER]->isAdmin()) {
+        if ($this->isAdmin()) {
             $this->db->unbanUser($_GET['userid']);
             header('location:?controller=admins&action=listusers', true);
         }
+    }
+
+    public function permissionDenied()
+    {
+        require('views/pages/permissiondenied.php');
     }
 
     /*
@@ -60,5 +60,13 @@ class AdminsController
     public function home()
     {
         require('views/users/home.php');
+    }
+
+    /*
+     * helpers
+     */
+
+    private function isAdmin(){
+        return $_SESSION[USER]->isAdmin();
     }
 }

@@ -14,61 +14,34 @@ require '../phpmailer/PHPMailerAutoload.php';
  */
 class UsersController
 {
-    //post only
+    private $db;
+
     public function register()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+        {
             return $this->error();
         }
 
-        $db = Db::getInstance();
         $email = $_POST["email"];
         $password = $_POST["password"];
         $username = $_POST["username"];
-        $userIdToHash = $db->createUser($email, $password, $username);
-        $this->verifyUserWithEmail($email, $username, $userIdToHash);
-    }
-
-    public function error()
-    {
-        require('views/pages/error.php');
+        $userId = $this->db->createUser($email, $password, $username);
+        $this->verifyUserWithEmail($email, $username, $userId);
     }
 
     private function verifyUserWithEmail($email, $username, $hash)
     {
         $message = getEmailMsg($username, $email, $hash);
-
         $mail = new PHPMailer;
+        require '../mailconfig.php';
 
-//$mail->SMTPDebug = 3;                               // Enable verbose debug output
-
-        $mail->isSMTP();                                      // Set mailer to use SMTP
-        $mail->Host = 'smtp.mail.yahoo.com';  // Specify main and backup SMTP servers
-        $mail->SMTPAuth = true;                               // Enable SMTP authentication
-        $mail->Username = 'noreplyjofajofa@yahoo.com';                 // SMTP username
-        $mail->Password = 'ThisIsNotMyPassword1212';                           // SMTP password
-        $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-        $mail->Port = 587;                                    // TCP port to connect to
-
-        $mail->setFrom('noreplyjofajofa@yahoo.com', 'Verification Jofa account');
-        $mail->addAddress($email, $username);     // Add a recipient
-        $mail->addAddress($email);               // Name is optional
-        $mail->addReplyTo('info@example.com', 'Information');
-        $mail->addCC('cc@example.com');
-        $mail->addBCC('bcc@example.com');
-
-        $mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
-        $mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
-        $mail->isHTML(true);                                  // Set email format to HTML
-
-        $mail->Subject = 'Jofa Account Verification';
-        $mail->Body = $message;
-        $mail->AltBody = $message;
-
-        if (!$mail->send()) {
+        if (!$mail->send())
+        {
             echo 'Verification email could not be sent.';
-            echo 'Mailer Error: ' . $mail->ErrorInfo;
-        } else {
+            error_log($mail->ErrorInfo);
+        } else
+        {
             echo 'Your verification email has been sent. Please wait a few minutes and then activate your account';
         }
     }
@@ -82,25 +55,25 @@ class UsersController
         $senderIp = $_SERVER['REMOTE_ADDR'];
         $user = $db->login($email, $password);
 
-        if ($db->isUserBlocked($email)) {
+        if ($db->isUserBlocked($email))
+        {
             $db->createAttempt($email, 0, $date, $senderIp);
             return $this->error();
-        } else {
-            if ($user) {
+        } else
+        {
+            if ($user)
+            {
                 $successful = true;
                 $db->createAttempt($email, $successful, $date, $senderIp);
                 $_SESSION[USER] = $user;
                 header('location:?controller=users&action=home', true);
-            } else {
+            } else
+            {
                 $successful = false;
                 $db->createAttempt($email, $successful, $date, $senderIp);
             }
         }
     }
-
-    /*
-     * errors
-     */
 
     public function logout()
     {
@@ -108,6 +81,10 @@ class UsersController
         session_destroy();
         header('location:?controller=users&action=goodbye&username=' . $username, true);
     }
+
+    /*
+     * errors
+     */
 
     public function verify()
     {
@@ -145,21 +122,26 @@ class UsersController
         $imageFileType = pathinfo($_FILES['fileToUpload']['name'], PATHINFO_EXTENSION);
 
         //if they DID upload a file...
-        if ($_FILES['fileToUpload']['name']) {
+        if ($_FILES['fileToUpload']['name'])
+        {
             //if no errors...
-            if (!$_FILES['fileToUpload']['error']) {
+            if (!$_FILES['fileToUpload']['error'])
+            {
                 //now is the time to modify the future file name and validate the file
                 $new_file_name = $id . "." . $imageFileType; //rename file
                 if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
                     && $imageFileType != "gif"
-                ) {
+                )
+                {
                     echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
                     $valid_file = false;
-                } else {
+                } else
+                {
                     $valid_file = true;
                 }
                 //if the file has passed the test
-                if ($valid_file) {
+                if ($valid_file)
+                {
                     //move it to where we want it to be
                     move_uploaded_file($_FILES['fileToUpload']['tmp_name'], 'uploads/' . $new_file_name);
                     echo 'Congratulations!  Your file was accepted.';
@@ -167,12 +149,17 @@ class UsersController
                 $_SESSION[USER]->setImgPath($new_file_name);
                 Db::getInstance()->setUserImgPath($_SESSION[USER]);
             } //if there is an error...
-            else {
+            else
+            {
                 //set that to be the returned message
                 echo 'Ooops!  Your upload triggered the following error:  ' . $_FILES['fileToUpload']['error'];
             }
         }
     }
 
+    public function error()
+    {
+        require('views/pages/error.php');
+    }
 
 }

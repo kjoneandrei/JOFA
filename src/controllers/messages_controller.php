@@ -11,30 +11,36 @@ require_once('models/message.php');
  */
 class MessagesController
 {
+    private $db;
+
+    public function __construct()
+    {
+        $this->db = Db::getInstance();
+    }
+
     public function newmessage()
     {
-        $db = Db::getInstance();
-        $db->createMessage($_SESSION[USER]->getId(), $_POST['recipient'], $_POST["header"], $_POST["body"]);
+        $this->db->createMessage($_SESSION[USER]->getId(), $_POST['recipient'], $_POST["header"], $_POST["body"]);
         header('location:?controller=messages&action=sentmessages');
     }
 
     public function mymessages()
     {
-        if (!isset($_SESSION[USER])) {
+        if (!isset($_SESSION[USER]))
+        {
             return error;
         }
-        $db = Db::getInstance();
-        $messages = $db->loadMessageByUser($_SESSION[USER]->getId());
+        $messages = $this->db->loadMessageByUser($_SESSION[USER]->getId());
         require('views/messages/mymessages.php');
     }
 
     public function sentmessages()
     {
-        if (!isset($_SESSION[USER])) {
+        if (!isset($_SESSION[USER]))
+        {
             return error;
         }
-        $db = Db::getInstance();
-        $messages = $db->loadMessageBySender($_SESSION[USER]->getId());
+        $messages = $this->db->loadMessageBySender($_SESSION[USER]->getId());
         require('views/messages/sentmessages.php');
     }
 

@@ -5,10 +5,7 @@ require('../src/models/user.php');
 require('../src/ini.php');
 
 /**
- * Created by PhpStorm.
- * User: Ferenc_S
- * Date: 5/12/2016
- * Time: 3:06 PM
+ * Deprecated file, it was used to test datbase usage
  */
 class connectionTest extends PHPUnit_Framework_TestCase
 {
