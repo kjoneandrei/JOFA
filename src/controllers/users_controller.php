@@ -125,8 +125,26 @@ class UsersController
         require('views/users/invalid.php');
     }
 
+    private function verifyPostRequestCSRF()
+    {
+        $this->verifyIdentity();
+        if ($_POST[TOKEN] != $_SESSION[TOKEN])
+        {
+            reloc('pages', 'permissionDenied');
+        }
+    }
+
+    private function verifyIdentity()
+    {
+        if (!isset($_SESSION[USER]))
+        {
+            reloc('pages', 'permissionDenied');
+        }
+    }
+
     public function pictureUpload()
     {
+        $this->verifyPostRequestCSRF();
         $id = $_SESSION[USER]->getId();
         $imageFileType = pathinfo($_FILES['fileToUpload']['name'], PATHINFO_EXTENSION);
 
@@ -161,7 +179,7 @@ class UsersController
             else
             {
                 //set that to be the returned message
-                echo 'Ooops!  Your upload triggered the following error:  ' . $_FILES['fileToUpload']['error'];
+               error_log($_FILES['fileToUpload']['error']);
             }
         }
     }

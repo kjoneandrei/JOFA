@@ -20,7 +20,7 @@ class MessagesController
 
     public function newMessage()
     {
-        $this->verifyRequestCSRF();
+        $this->verifyPostRequestCSRF();
         $this->db->createMessage($_SESSION[USER]->getId(), $_POST['recipient'], $_POST["header"], $_POST["body"]);
         reloc('messages', 'sentMessages');
     }
@@ -39,7 +39,7 @@ class MessagesController
         require('views/messages/sentmessages.php');
     }
 
-    private function verifyRequestCSRF()
+    private function verifyPostRequestCSRF()
     {
         $this->verifyIdentity();
         if ($_POST[TOKEN] != $_SESSION[TOKEN])

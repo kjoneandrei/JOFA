@@ -72,6 +72,11 @@ function csrfTokenTest()
     }
 }
 
+function formToken()
+{
+    echo '<input type="hidden" name="' . TOKEN . '" value ="' . $_SESSION[TOKEN] . '">';
+}
+
 function reloc($controller, $action)
 {
     header('location:?controller=' . $controller . '&action=' . $action);

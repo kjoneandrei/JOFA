@@ -9,12 +9,11 @@
                 <h4 class="modal-title">Send Message </h4>
             </div>
             <div class="modal-body">
-                <form method="POST" action="?controller=messages&action=newmessage">
-                    <input type="hidden" name="<?php echo TOKEN ?>" value ="<?php echo $_SESSION[TOKEN]; ?>">
+                <form method="POST" action="?controller=messages&action=newMessage">
+                    <?php formToken(); ?>
                     <div class="form-group">
                         <label for="recipient">Recipient</label>
-                        <input type="text" class="form-control" id="recipient" name="recipient"
-                               placeholder="Enter recipient">
+                        <select id="recipient" name="recipient" class="form-control"></select>
                         <label for="msgheader">Header</label>
                         <input type="text" class="form-control" id="msgheader" name="header"
                                placeholder="Enter header">
@@ -23,6 +22,7 @@
                         <label for="msgbody">Body</label>
                         <textarea class="form-control" rows="5" id="msgbody" name="body"></textarea>
                     </div>
+                    <td><input id="button" type="submit" class="btn btn-default" name="submit" value="Send">
                 </form>
             </div>
             <div class="modal-footer">
