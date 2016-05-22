@@ -1,6 +1,6 @@
 <?php if ($user->isBanned())
 {
-    $target = 'href="?controller=admins&action=unban&userid=' . $user->getId();
+    $target = 'href="?controller=admins&action=unBan&userid=' . $user->getId();
     $bantext = 'Unban';
 } else
 {

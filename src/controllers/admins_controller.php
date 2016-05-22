@@ -16,9 +16,6 @@ class AdminsController
     /* @var $db Db */
     private $db;
 
-    /**
-     * AdminsController constructor.
-     */
     public function __construct()
     {
         $this->db = Db::getInstance();
@@ -26,15 +23,15 @@ class AdminsController
 
     public function listUsers()
     {
-        $this->verifyRequest();
+        $this->verifyIdentity(); // this method is not vulnerable to CSRF because of its nature
         $users = $this->db->loadAllUsers();
         require 'views/admins/listUsers.php';
     }
 
     public function ban()
     {
-        $this->verifyRequest();
-        $this->db->banUser($_GET['userid']);
+        $this->verifyRequest(); // checks the token in the URL, reroutes to permissionDenied if fails
+        $this->db->banUser($_GET['userid']);;
         reloc('admins', 'listUsers');
     }
 
@@ -47,10 +44,16 @@ class AdminsController
 
     private function verifyRequest()
     {
-        if ($_SESSION[USER]->isAdmin() && $_GET[TOKEN] == $_SESSION[TOKEN])
+        $this->verifyIdentity();
+        if ($_GET[TOKEN] != $_SESSION[TOKEN])
         {
-            return;
-        } else
+            reloc('pages', 'permissionDenied');
+        }
+    }
+
+    private function verifyIdentity()
+    {
+        if (!$_SESSION[USER]->isAdmin())
         {
             reloc('pages', 'permissionDenied');
         }

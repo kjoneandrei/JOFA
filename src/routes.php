@@ -28,10 +28,10 @@ function call($controller, $action)
 // just a list of the controllers we have and their actions
 // we consider those "allowed" values
 $controllers = array(
-    'pages' => ['home', 'error', 'userlockedout', 'invalidlogininfo', 'verificationsent', 'verificationnotsent', 'permissionDenied'],
-    'users' => ['register', 'login', 'logout', 'home', 'goodbye', 'sendemail', 'pictureUpload', 'error', 'verify'],
-    'admins' => ['listusers', 'ban', 'unban'],
-    'messages' => ['newmessage', 'mymessages', 'sentmessages', 'error']);
+    'pages' => ['home', 'error', 'userLockedOut', 'invalidLoginInfo', 'verificationSent', 'verificationNotSent', 'permissionDenied'],
+    'users' => ['register', 'login', 'logout', 'home', 'goodbye', 'sendEmail', 'pictureUpload', 'error', 'verify'],
+    'admins' => ['listUsers', 'ban', 'unBan'],
+    'messages' => ['newMessage', 'myMessages', 'sentMessages', 'error']);
 
 // check that the requested controller and action are both allowed
 // if someone tries to access something else he will be redirected to the error action of the pages controller

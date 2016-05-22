@@ -17,6 +17,11 @@ class PagesController
         require('views/pages/home.php');
     }
 
+    public function permissionDenied()
+    {
+        require('views/pages/permissiondenied.php');
+    }
+
     public function error()
     {
         require('views/pages/error.php');

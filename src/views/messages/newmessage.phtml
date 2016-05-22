@@ -10,19 +10,19 @@
             </div>
             <div class="modal-body">
                 <form method="POST" action="?controller=messages&action=newmessage">
+                    <input type="hidden" name="<?php echo TOKEN ?>" value ="<?php echo $_SESSION[TOKEN]; ?>">
                     <div class="form-group">
                         <label for="recipient">Recipient</label>
-                        <select id="recipient" name="recipient" class="form-control"></select>
+                        <input type="text" class="form-control" id="recipient" name="recipient"
+                               placeholder="Enter recipient">
                         <label for="msgheader">Header</label>
                         <input type="text" class="form-control" id="msgheader" name="header"
                                placeholder="Enter header">
                     </div>
-
                     <div class="form-group">
                         <label for="msgbody">Body</label>
                         <textarea class="form-control" rows="5" id="msgbody" name="body"></textarea>
                     </div>
-                    <td><input id="button" type="submit" class="btn btn-default" name="submit" value="Send">
                 </form>
             </div>
             <div class="modal-footer">

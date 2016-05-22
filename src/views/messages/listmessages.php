@@ -9,5 +9,5 @@ if (isset($messages)) {
     foreach ($messages as &$message) {
         require 'views/messages/message.php';
     }
-} else echo 'no messages sadly';
+}
     

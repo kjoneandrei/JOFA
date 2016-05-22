@@ -54,7 +54,7 @@ class UsersController
         if ($db->isUserBlocked($email))
         {
             $db->createAttempt($email, 0, $date, $senderIp);
-            reloc('pages', 'userlockedout');
+            reloc('pages', 'userLockedOut');
         } else
         {
             if ($user)
@@ -62,13 +62,13 @@ class UsersController
                 $successful = true;
                 $db->createAttempt($email, $successful, $date, $senderIp);
                 $_SESSION[USER] = $user;
-                $_SESSION["token"] = md5(uniqid(mt_rand(), true));
+                $_SESSION[TOKEN] = md5(uniqid(mt_rand(), true));
                 reloc('users', 'home');
             } else
             {
                 $successful = false;
                 $db->createAttempt($email, $successful, $date, $senderIp);
-                reloc('pages', 'invalidlogininfo');
+                reloc('pages', 'invalidLoginInfo');
             }
         }
     }

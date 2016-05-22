@@ -8,11 +8,14 @@ require_once('connection.php');
  */
 
 // PHP initializer
+ini_set('display_startup_errors', 1);
+ini_set('display_errors', 1);
 ini_set('file_uploads', 1);
+error_reporting(-1);
 
 // App constants
 define('USER', 'USER');
-define('TOKEN', 'TOKEN');
+define('TOKEN', 'csrf');
 
 // DB constants
 
@@ -72,4 +75,5 @@ function csrfTokenTest()
 function reloc($controller, $action)
 {
     header('location:?controller=' . $controller . '&action=' . $action);
+    exit();
 }
