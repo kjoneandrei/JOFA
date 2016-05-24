@@ -7,10 +7,14 @@
     <head>
         <script src="js/jquery-2.2.3.min.js"></script>
         <script src="bootstrap-3.3.6/js/bootstrap.min.js"></script>
+        <script src="js/jquery-validator.min.js"></script>
         <script src="js/JOFA.js"></script>
+        <script src="js/registrationFormValidation.js"></script>
+
         <link rel="stylesheet" type="text/css" href="bootstrap-3.3.6/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="bootstrap-3.3.6/css/bootstrap-theme.min.css">
         <link rel="stylesheet" type="text/css" href="css/JOFA.css">
+
         <title>Message-Lords</title>
     </head>
     <body>
@@ -64,7 +68,7 @@
     <?php
     include 'users/login.phtml';
     include 'messages/newmessage.phtml';
-    include 'users/signup.html';
+    include 'users/signup.phtml';
     ?>
     </body>
     </html>
