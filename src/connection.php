@@ -167,12 +167,14 @@ class Db extends PDO
     function login($email, $password)
     {
         $user = $this->loadUserByEmail($email);
-        var_dump($user);
+        $date = date('Y-m-d H:i:s');
+        $senderIp = $_SERVER['REMOTE_ADDR'];
         if ($user && password_verify($password, $user->getPassword()))
         {
             return $user;
         } else
         {
+            $this->createAttempt($email, false, $date, $senderIp);
             return false;
         }
     }
@@ -281,9 +283,10 @@ class Db extends PDO
         $sth = $this->prepare("SELECT * FROM attempt WHERE USER_EMAIL=? AND SUCCESSFUL=0 AND  DATE>? ORDER BY DATE DESC");
         $sth->execute(array($userEmail, $date));
         $attempts = $this->attemptFetcher($sth);
+
         $counter = 0;
         foreach ($attempts as &$attempt)
-        {
+        {var_dump($attempts);
             echo $attempt->getSuccessful();
             if ($attempt->getSuccessful())
             {

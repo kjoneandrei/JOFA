@@ -57,34 +57,30 @@ class UsersController
         /* @var $user User */
         $email = $_POST["email"];
         $password = $_POST["password"];
-        $date = date('Y-m-d H:i:s');
-        $senderIp = $_SERVER['REMOTE_ADDR'];
         $user = $this->db->login($email, $password);
-        if(!$user){
-            $this->db->createAttempt($email, false, $date, $senderIp);
+        if(!$user)
+        {
             reloc('pages', 'invalidLoginInfo');
         }
         if ($this->db->isUserBlocked($email))
         {
-            $this->db->createAttempt($email, false, $date, $senderIp);
             reloc('pages', 'userLockedOut');
         }
         if (!$user->isActive())
         {
-            $this->db->createAttempt($email, false, $date, $senderIp);
             reloc('pages', 'inactive');
         }
         if ($user->isBanned())
         {
-            $this->db->createAttempt($email, false, $date, $senderIp);
             reloc('pages', 'banned');
         }
         if ($user)
         {
-            $successful = true;
-            $this->db->createAttempt($email, $successful, $date, $senderIp);
             $_SESSION[USER] = $user;
             $_SESSION[TOKEN] = md5(uniqid(mt_rand(), true));
+            $date = date('Y-m-d H:i:s');
+            $senderIp = $_SERVER['REMOTE_ADDR'];
+            $this->db->createAttempt($email, true, $date, $senderIp);
             reloc('users', 'home');
         }
     }
