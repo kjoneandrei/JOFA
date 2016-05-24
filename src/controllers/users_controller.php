@@ -14,7 +14,17 @@ require '../phpmailer/PHPMailerAutoload.php';
  */
 class UsersController
 {
+    /* @var $db Db */
     private $db;
+
+
+    /**
+     * UsersController constructor.
+     */
+    public function __construct()
+    {
+        $this->db = Db::getInstance();
+    }
 
     public function register()
     {
@@ -23,7 +33,7 @@ class UsersController
         $password = $_POST["password"];
         $username = $_POST["username"];
         $userId = $this->db->createUser($email, $password, $username);
-        $this->verifyUserWithEmail($email, $username, $userId);
+        //$this->verifyUserWithEmail($email, $username, $userId);
     }
 
     private function verifyUserWithEmail($email, $username, $userId)
@@ -44,34 +54,41 @@ class UsersController
 
     public function login()
     {
+        /* @var $user User */
         $email = $_POST["email"];
         $password = $_POST["password"];
         $date = date('Y-m-d H:i:s');
-        $db = Db::getInstance();
         $senderIp = $_SERVER['REMOTE_ADDR'];
-        $user = $db->login($email, $password);
-
-        if ($db->isUserBlocked($email))
+        $user = $this->db->login($email, $password);
+        if(!$user){
+            $this->db->createAttempt($email, false, $date, $senderIp);
+            reloc('pages', 'invalidLoginInfo');
+        }
+        if ($this->db->isUserBlocked($email))
         {
-            $db->createAttempt($email, 0, $date, $senderIp);
+            $this->db->createAttempt($email, false, $date, $senderIp);
             reloc('pages', 'userLockedOut');
-        } else
+        }
+        if (!$user->isActive())
         {
-            if ($user)
-            {
-                $successful = true;
-                $db->createAttempt($email, $successful, $date, $senderIp);
-                $_SESSION[USER] = $user;
-                $_SESSION[TOKEN] = md5(uniqid(mt_rand(), true));
-                reloc('users', 'home');
-            } else
-            {
-                $successful = false;
-                $db->createAttempt($email, $successful, $date, $senderIp);
-                reloc('pages', 'invalidLoginInfo');
-            }
+            $this->db->createAttempt($email, false, $date, $senderIp);
+            reloc('pages', 'inactive');
+        }
+        if ($user->isBanned())
+        {
+            $this->db->createAttempt($email, false, $date, $senderIp);
+            reloc('pages', 'banned');
+        }
+        if ($user)
+        {
+            $successful = true;
+            $this->db->createAttempt($email, $successful, $date, $senderIp);
+            $_SESSION[USER] = $user;
+            $_SESSION[TOKEN] = md5(uniqid(mt_rand(), true));
+            reloc('users', 'home');
         }
     }
+
 
     private function validateRegister()
     {
@@ -84,11 +101,11 @@ class UsersController
             reloc('pages', 'error');
         }
 
-        if (!preg_match('@[A-Z]@', $_POST["password"]) || !preg_match('@[a-z]@', $_POST["password"]) || preg_match('@[0-9]@', $_POST["password"]) || $_POST["password"] < 8)
+        if (!preg_match('/^[a-zA-Z0-9-_]+$/', $_POST["password"]) || strlen($_POST['password']) < 8)
         {
             reloc('pages', 'error');
         }
-        if (preg_match('/^[A-Za-z0-9_-]+$/', $_POST["username"]))
+        if (!preg_match('/^[a-zA-Z0-9-_]+$/', $_POST["username"]) || strlen($_POST['username']) < 4)
         {
             reloc('pages', 'error');
         }

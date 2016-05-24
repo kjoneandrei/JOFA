@@ -17,6 +17,21 @@ class PagesController
         require('views/pages/home.php');
     }
 
+    public function inactive()
+    {
+        require 'views/pages/inactive.php';
+    }
+
+    public function banned()
+    {
+        require 'views/pages/banned.php';
+    }
+
+    public function invalidLoginInfo()
+    {
+        require 'views/pages/invalidlogininfo.php';
+    }
+
     public function permissionDenied()
     {
         require('views/pages/permissiondenied.php');

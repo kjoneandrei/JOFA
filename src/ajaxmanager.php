@@ -30,5 +30,3 @@ function loadUserNameId()
     $return = json_encode($db->loadAllUserNameId());
     echo $return;
 }
-
-?>

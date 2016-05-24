@@ -6,12 +6,17 @@ class Db extends PDO
 
     public static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (!isset(self::$instance))
+        {
             $pdo_options[PDO::ATTR_ERRMODE] = PDO::ERRMODE_EXCEPTION;
             require_once('../dbconfig.php');
-            if (isset($dbname) AND isset($dbuser) AND isset($dbpassword)) {
+            if (isset($dbname) AND isset($dbuser) AND isset($dbpassword))
+            {
                 self::$instance = new Db ('mysql:host=localhost;dbname=' . $dbname, $dbuser, $dbpassword, $pdo_options);
-            } else die ('A valid database configuration was not found!');
+            } else
+            {
+                die ('A valid database configuration was not found!');
+            }
         }
         return self::$instance;
     }
@@ -24,102 +29,14 @@ class Db extends PDO
     {
         $id = $this->generateUserID();
         $hashed_password = $this->hash_password($password);
+        $imgpath = "def.jpg";
         $active = 0;
-        $sth = $this->prepare("INSERT INTO user(ID, EMAIL, PASSWORD, USERNAME, ACTIVE)
-    VALUES(?, ?, ?, ?, ?)");
-        $sth->execute(array($id, $email, $hashed_password, $username, $active));
-        createRole($id);
+        $banned = 0;
+        $sth = $this->prepare("INSERT INTO user(ID, EMAIL, PASSWORD, USERNAME, IMGPATH, ACTIVE, BANNED)
+    VALUES(?, ?, ?, ?, ?, ?, ?)");
+        $sth->execute(array($id, $email, $hashed_password, $username, $imgpath, $active, $banned));
+        $this->createRole($id, USER_R);
         return $id;
-    }
-
-    public function loadAllUsers()
-    {
-        $sth = $this->prepare("SELECT * FROM user");
-        $sth->execute();
-        return $this->userFetcher($sth);
-    }
-
-    public function loadUserByEmail($userEmail)
-    {
-        $sth = $this->prepare("SELECT * FROM user WHERE EMAIL=?");
-        $sth->execute(array($userEmail));
-        return $this->userFetcher($sth)[0];
-    }
-
-    public function loadUserById($userID)
-    {
-        $sth = $this->prepare("SELECT * FROM user WHERE ID=?");
-        $sth->execute(array($userID));
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            return User::fromRow($row);
-        }
-    }
-
-    private function userFetcher($sth)
-    {
-        $result = [];
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            $user = User::fromRow($row);
-            $user->setRoles($this->loadRoles($user->getId()));
-            array_push($result, $user);
-        }
-        return $result;
-    }
-
-    public function loadRoles($userId)
-    {
-        $sth = $this->prepare("SELECT * from role WHERE USER_ID = ?");
-        $sth->execute(array($userId));
-        return $this->roleFetcher($sth);
-    }
-
-    private function roleFetcher($sth)
-    {
-        $roles = [];
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            array_push($roles, $row[ROLE]);
-        }
-        return $roles;
-    }
-
-    public function activateUser($user)
-    {
-        $active = 1;
-        $sth = $this->prepare("UPDATE user SET ACTIVE = ? WHERE ID = ?");
-        $sth->execute(array($active, $user->getId()));
-    }
-
-    public function setUserImgPath($user)
-    {
-        $sth = $this->prepare("UPDATE user SET IMGPATH = ? WHERE ID = ?");
-        $sth->execute(array($user->getImgPath(), $user->getId()));
-    }
-
-    public function banUser($userId)
-    {
-        $sth = $this->prepare("UPDATE user SET BANNED = ? WHERE ID = ?");
-        $sth->execute(array(1, $userId));
-    }
-
-    public function unbanUser($userId)
-    {
-        $sth = $this->prepare("UPDATE user SET BANNED = ? WHERE ID = ?");
-        $sth->execute(array(0, $userId));
-    }
-
-    // loads assoc array of id+username for the messagemodal
-    public function loadAllUserNameId()
-    {
-        $sth = $this->prepare("SELECT ID, USERNAME FROM user");
-        $sth->execute();
-        $result = [];
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            $user = array(
-                "id" => htmlspecialchars($row[ID]),
-                "username" => htmlspecialchars($row[USERNAME]));
-            array_push($result, $user);
-        }
-        return $result;
     }
 
     function generateUserID()
@@ -129,9 +46,11 @@ class Db extends PDO
 
     function generateGUID()
     {
-        if (function_exists('com_create_guid')) {
+        if (function_exists('com_create_guid'))
+        {
             return com_create_guid();
-        } else {
+        } else
+        {
             mt_srand((double)microtime() * 10000);//optional for php 4.2.0 and up.
             $charid = strtoupper(md5(uniqid(rand(), true)));
             $hyphen = chr(45);// "-"
@@ -155,6 +74,90 @@ class Db extends PDO
         return $hashed_password;
     }
 
+    public function createRole($userId, $role)
+    {
+        $sth = $this->prepare("INSERT INTO role VALUES(?, ?)");
+        $sth->execute(array($userId, $role));
+    }
+
+    public function loadAllUsers()
+    {
+        $sth = $this->prepare("SELECT * FROM user");
+        $sth->execute();
+        return $this->userFetcher($sth);
+    }
+
+    private function userFetcher($sth)
+    {
+        $result = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC))
+        {
+            $user = User::fromRow($row);
+            $user->setRoles($this->loadRoles($user->getId()));
+            array_push($result, $user);
+        }
+        return $result;
+    }
+
+    public function loadRoles($userId)
+    {
+        $sth = $this->prepare("SELECT * from role WHERE USER_ID = ?");
+        $sth->execute(array($userId));
+        return $this->roleFetcher($sth);
+    }
+
+    private function roleFetcher($sth)
+    {
+        $roles = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC))
+        {
+            array_push($roles, $row[ROLE]);
+        }
+        return $roles;
+    }
+
+    public function activateUser($user)
+    {
+        $active = 1;
+        $sth = $this->prepare("UPDATE user SET ACTIVE = ? WHERE ID = ?");
+        $sth->execute(array($active, $user->getId()));
+    }
+
+    public function setUserImgPath($user)
+    {
+        $sth = $this->prepare("UPDATE user SET IMGPATH = ? WHERE ID = ?");
+        $sth->execute(array($user->getImgPath(), $user->getId()));
+    }
+
+    // loads assoc array of id+username for the messagemodal
+
+    public function banUser($userId)
+    {
+        $sth = $this->prepare("UPDATE user SET BANNED = ? WHERE ID = ?");
+        $sth->execute(array(1, $userId));
+    }
+
+    public function unbanUser($userId)
+    {
+        $sth = $this->prepare("UPDATE user SET BANNED = ? WHERE ID = ?");
+        $sth->execute(array(0, $userId));
+    }
+
+    public function loadAllUserNameId()
+    {
+        $sth = $this->prepare("SELECT ID, USERNAME FROM user");
+        $sth->execute();
+        $result = [];
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC))
+        {
+            $user = array(
+                "id" => htmlspecialchars($row[ID]),
+                "username" => htmlspecialchars($row[USERNAME]));
+            array_push($result, $user);
+        }
+        return $result;
+    }
+
     public function deleteUser($id)
     {
         $sth = $this->prepare("DELETE FROM user WHERE ID=?");
@@ -164,21 +167,23 @@ class Db extends PDO
     function login($email, $password)
     {
         $user = $this->loadUserByEmail($email);
-        if ($user->isBanned()) {
-            echo 'banned';
-            return false;
-        }
-        if (!$user->isActive()) {
-            echo 'inactive';
-            return false;
-        }
-        if (password_verify($password, $user->getPassword())) {
-            echo 'user';
+        var_dump($user);
+        if ($user && password_verify($password, $user->getPassword()))
+        {
             return $user;
-        } else {
-            echo 'wrongpass';
+        } else
+        {
             return false;
         }
+    }
+
+    public function loadUserByEmail($userEmail)
+    {
+        $sth = $this->prepare("SELECT * FROM user WHERE EMAIL=?");
+        $sth->execute(array($userEmail));
+        $result = $this->userFetcher($sth);
+        if(empty($result)) return false;
+        return $result[0];
     }
 
     /*
@@ -209,7 +214,8 @@ class Db extends PDO
     private function messageFetcher($sth)
     {
         $result = [];
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC))
+        {
             $message = Message::fromRow($row);
             $message->setSender($this->loadUserById($message->getSenderId()));
             $message->setRecipient($this->loadUserById($message->getRecipientId()));
@@ -218,16 +224,26 @@ class Db extends PDO
         return $result;
     }
 
+    public function loadUserById($userID)
+    {
+        $sth = $this->prepare("SELECT * FROM user WHERE ID=?");
+        $sth->execute(array($userID));
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC))
+        {
+            return User::fromRow($row);
+        }
+    }
+
+    /*
+     * RoleManager
+     */
+
     public function loadMessageBySender($userID)
     {
         $sth = $this->prepare("SELECT * FROM message WHERE SENDER_USER_ID=?");
         $sth->execute(array($userID));
         return $this->messageFetcher($sth);
     }
-
-    /*
-     * RoleManager
-     */
 
     public function loadSenderByMessage($message)
     {
@@ -237,12 +253,6 @@ class Db extends PDO
     public function loadRecipientByMessage($message)
     {
         $this->loadUserById($message->getRecipientId());
-    }
-
-    public function createRole($userId, $role)
-    {
-        $sth = $this->prepare("INSERT INTO role VALUES(?, ?)");
-        $sth->execute(array($userId, $role));
     }
 
     public function isAdmin($userId)
@@ -272,14 +282,20 @@ class Db extends PDO
         $sth->execute(array($userEmail, $date));
         $attempts = $this->attemptFetcher($sth);
         $counter = 0;
-        foreach ($attempts as &$attempt) {
+        foreach ($attempts as &$attempt)
+        {
             echo $attempt->getSuccessful();
-            if ($attempt->getSuccessful()) {
+            if ($attempt->getSuccessful())
+            {
                 return false;
             }
-            if (!$attempt->getSuccessful()) {
+            if (!$attempt->getSuccessful())
+            {
                 $counter++;
-                if ($counter >= 3) return true;
+                if ($counter >= 3)
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -290,7 +306,8 @@ class Db extends PDO
     {
         $result = [];
 
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC))
+        {
             array_push($result, Attempt::fromRow($row));
         }
 

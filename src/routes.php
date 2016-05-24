@@ -28,7 +28,7 @@ function call($controller, $action)
 // just a list of the controllers we have and their actions
 // we consider those "allowed" values
 $controllers = array(
-    'pages' => ['home', 'error', 'userLockedOut', 'invalidLoginInfo', 'verificationSent', 'verificationNotSent', 'permissionDenied'],
+    'pages' => ['home', 'error', 'userLockedOut', 'invalidLoginInfo', 'inactive', 'banned', 'verificationSent', 'verificationNotSent', 'permissionDenied'],
     'users' => ['register', 'login', 'logout', 'home', 'goodbye', 'sendEmail', 'pictureUpload', 'error', 'verify'],
     'admins' => ['listUsers', 'ban', 'unBan'],
     'messages' => ['newMessage', 'myMessages', 'sentMessages', 'error']);
