@@ -37,6 +37,11 @@ class PagesController
         require('views/pages/permissiondenied.php');
     }
 
+    public function userLockedOut()
+    {
+        require('views/pages/userlockedout.php');
+    }
+
     public function error()
     {
         require('views/pages/error.php');

@@ -174,7 +174,7 @@ class Db extends PDO
             return $user;
         } else
         {
-            $this->createAttempt($email, false, $date, $senderIp);
+            $this->createAttempt($email, 0, $date, $senderIp);
             return false;
         }
     }
@@ -280,25 +280,21 @@ class Db extends PDO
     {
         $date = date('Y-m-d H:i:s', strtotime('-1 hour'));
 
-        $sth = $this->prepare("SELECT * FROM attempt WHERE USER_EMAIL=? AND SUCCESSFUL=0 AND  DATE>? ORDER BY DATE DESC");
+        $sth = $this->prepare("SELECT * FROM attempt WHERE USER_EMAIL=? AND  DATE>? ORDER BY DATE DESC");
         $sth->execute(array($userEmail, $date));
         $attempts = $this->attemptFetcher($sth);
 
         $counter = 0;
         foreach ($attempts as &$attempt)
-        {var_dump($attempts);
-            echo $attempt->getSuccessful();
+        {
             if ($attempt->getSuccessful())
             {
                 return false;
             }
-            if (!$attempt->getSuccessful())
+            $counter++;
+            if ($counter >= 3)
             {
-                $counter++;
-                if ($counter >= 3)
-                {
-                    return true;
-                }
+                return true;
             }
         }
         return false;

@@ -4,7 +4,7 @@ USE `websequire`;
 DROP TABLE IF EXISTS `attempt`;
 CREATE TABLE IF NOT EXISTS `attempt` (
   `USER_EMAIL` varchar(45) NOT NULL,
-  `SUCCESSFUL` bit(1) NOT NULL,
+  `SUCCESSFUL` tinyint(1) NOT NULL,
   `DATE` datetime NOT NULL,
   `IP` varchar(32) NOT NULL
 );

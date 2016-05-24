@@ -58,13 +58,13 @@ class UsersController
         $email = $_POST["email"];
         $password = $_POST["password"];
         $user = $this->db->login($email, $password);
-        if(!$user)
-        {
-            reloc('pages', 'invalidLoginInfo');
-        }
         if ($this->db->isUserBlocked($email))
         {
             reloc('pages', 'userLockedOut');
+        }
+        if(!$user)
+        {
+            reloc('pages', 'invalidLoginInfo');
         }
         if (!$user->isActive())
         {
@@ -80,7 +80,7 @@ class UsersController
             $_SESSION[TOKEN] = md5(uniqid(mt_rand(), true));
             $date = date('Y-m-d H:i:s');
             $senderIp = $_SERVER['REMOTE_ADDR'];
-            $this->db->createAttempt($email, true, $date, $senderIp);
+            $this->db->createAttempt($email, 1, $date, $senderIp);
             reloc('users', 'home');
         }
     }
