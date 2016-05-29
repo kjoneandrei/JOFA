@@ -33,13 +33,13 @@ class UsersController
         $password = $_POST["password"];
         $username = $_POST["username"];
         $userId = $this->db->createUser($email, $password, $username);
-        //$this->verifyUserWithEmail($email, $username, $userId);
+        $this->verifyUserWithEmail($email, $username, $userId);
     }
 
     private function verifyUserWithEmail($email, $username, $userId)
     {
         $message = getEmailMsg($username, $userId);
-        $mail = new PHPMailer;
+        $mail = new PHPMailer();
         require '../mailconfig.php';
 
         if ($mail->send())

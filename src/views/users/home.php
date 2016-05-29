@@ -32,8 +32,6 @@
                             <div class="form-group"><input type="file" name="fileToUpload" id="fileToUpload"></div>
                             <div class="form-group"><input type="submit" value="Upload Image" name="submit"></div>
                         </form>
-
-
                         <!--/col-->
                     </div>
                 </div><!--/row-->
