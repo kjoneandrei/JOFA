@@ -32,6 +32,9 @@ class Db extends PDO
         $imgpath = "def.jpg";
         $active = 0;
         $banned = 0;
+        if($this->loadUserByEmail($email)){
+            return false; // user exists
+        }
         $sth = $this->prepare("INSERT INTO user(ID, EMAIL, PASSWORD, USERNAME, IMGPATH, ACTIVE, BANNED)
     VALUES(?, ?, ?, ?, ?, ?, ?)");
         $sth->execute(array($id, $email, $hashed_password, $username, $imgpath, $active, $banned));
@@ -262,7 +265,6 @@ class Db extends PDO
         $sth = $this->prepare("SELECT * from role WHERE USER_ID = ? AND ROLE = ?");
         $sth->execute(array($userId, ADMIN_R));
         return $sth->rowCount() > 0;
-
     }
 
     /*

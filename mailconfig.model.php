@@ -5,7 +5,7 @@ $mail->SMTPAuth = true;
 $mail->Username = 'noreplyjofajofa@yahoo.com';
 $mail->Password = 'ThisIsNotMyPassword1212';
 $mail->SMTPSecure = 'tls';
-$mail->Port = 587;
+$mail->Port = 465;
 $mail->setFrom('noreplyjofajofa@yahoo.com', 'Verification Jofa account');
 $mail->addAddress($email, $username);
 $mail->isHTML(true);

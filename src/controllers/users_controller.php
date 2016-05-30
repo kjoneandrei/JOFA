@@ -33,7 +33,32 @@ class UsersController
         $password = $_POST["password"];
         $username = $_POST["username"];
         $userId = $this->db->createUser($email, $password, $username);
+        if (!$userId)
+        {
+            reloc('pages', 'error');
+        }
         $this->verifyUserWithEmail($email, $username, $userId);
+    }
+
+    private function validateRegister()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+        {
+            reloc('pages', 'error');
+        }
+        if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL))
+        {
+            reloc('pages', 'error');
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9-_]+$/', $_POST["password"]) || strlen($_POST['password']) < 8 || strcmp($_POST['password'], $_POST['confirmpassword']) !=0)
+        {
+            reloc('pages', 'error');
+        }
+        if (!preg_match('/^[a-zA-Z0-9-_]+$/', $_POST["username"]) || strlen($_POST['username']) < 4)
+        {
+            reloc('pages', 'error');
+        }
     }
 
     private function verifyUserWithEmail($email, $username, $userId)
@@ -62,7 +87,7 @@ class UsersController
         {
             reloc('pages', 'userLockedOut');
         }
-        if(!$user)
+        if (!$user)
         {
             reloc('pages', 'invalidLoginInfo');
         }
@@ -82,28 +107,6 @@ class UsersController
             $senderIp = $_SERVER['REMOTE_ADDR'];
             $this->db->createAttempt($email, 1, $date, $senderIp);
             reloc('users', 'home');
-        }
-    }
-
-
-    private function validateRegister()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-        {
-            reloc('pages', 'error');
-        }
-        if (!filter_var($_POST["email"], FILTER_VALIDATE_EMAIL))
-        {
-            reloc('pages', 'error');
-        }
-
-        if (!preg_match('/^[a-zA-Z0-9-_]+$/', $_POST["password"]) || strlen($_POST['password']) < 8)
-        {
-            reloc('pages', 'error');
-        }
-        if (!preg_match('/^[a-zA-Z0-9-_]+$/', $_POST["username"]) || strlen($_POST['username']) < 4)
-        {
-            reloc('pages', 'error');
         }
     }
 
@@ -136,23 +139,6 @@ class UsersController
     public function invalidLoginInfo()
     {
         require('views/users/invalid.php');
-    }
-
-    private function verifyPostRequestCSRF()
-    {
-        $this->verifyIdentity();
-        if ($_POST[TOKEN] != $_SESSION[TOKEN])
-        {
-            reloc('pages', 'permissionDenied');
-        }
-    }
-
-    private function verifyIdentity()
-    {
-        if (!isset($_SESSION[USER]))
-        {
-            reloc('pages', 'permissionDenied');
-        }
     }
 
     public function pictureUpload()
@@ -192,8 +178,25 @@ class UsersController
             else
             {
                 //set that to be the returned message
-               error_log($_FILES['fileToUpload']['error']);
+                error_log($_FILES['fileToUpload']['error']);
             }
+        }
+    }
+
+    private function verifyPostRequestCSRF()
+    {
+        $this->verifyIdentity();
+        if ($_POST[TOKEN] != $_SESSION[TOKEN])
+        {
+            reloc('pages', 'permissionDenied');
+        }
+    }
+
+    private function verifyIdentity()
+    {
+        if (!isset($_SESSION[USER]))
+        {
+            reloc('pages', 'permissionDenied');
         }
     }
 

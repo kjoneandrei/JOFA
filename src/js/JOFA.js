@@ -1,6 +1,10 @@
 /**
  * Created by Ferenc_S on 5/20/2016.
  */
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
 function loadUserNameId() {
     if ($('#recipient').is(':empty')) {
         var data = {
