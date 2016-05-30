@@ -127,6 +127,7 @@ class UsersController
 
     public function home()
     {
+        $this->verifyIdentity();
         require('views/users/home.php');
     }
 
