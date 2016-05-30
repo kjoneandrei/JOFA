@@ -10,7 +10,7 @@
             </div>
             <div class="modal-body">
                 <form method="POST" action="?controller=messages&action=newMessage">
-                    <?php formToken(); ?>
+                    <?php if (isset($_SESSION[TOKEN])) formToken(); ?>
                     <div class="form-group">
                         <label for="recipient">Recipient</label>
                         <select id="recipient" name="recipient" class="form-control"></select>

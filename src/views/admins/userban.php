@@ -1,12 +1,14 @@
 <?php if ($user->isBanned())
 {
-    $target = 'href="?controller=admins&action=unBan&userid=' . $user->getId();
+    $target = '?controller=admins&action=unBan';
     $bantext = 'Unban';
 } else
 {
-    $target = 'href="?controller=admins&action=ban&userid=' . $user->getId();
+    $target = '?controller=admins&action=ban';
     $bantext = 'Ban';
 } ?>
-<a <?php echo $target . '&csrf=' . $_SESSION[TOKEN]; ?>">
-<button class="btn btn-danger"><?php echo $bantext; ?></button>
-</a>
+<form method="POST" action="<?php echo $target ?>">
+    <?php formToken() ?>
+    <input type="hidden" name="userid" value="<?php echo $user->getId() ?>"/>
+    <button type="submit" class="btn btn-danger"><?php echo $bantext; ?></button>
+</form>

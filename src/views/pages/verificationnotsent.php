@@ -7,4 +7,4 @@
  */
 ?>
 
-<p>Verification could not be sent to <?php echox($email); ?>.</p>
+<p>Verification could not be sent to the email speciifed.</p>

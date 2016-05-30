@@ -31,21 +31,21 @@ class AdminsController
     public function ban()
     {
         $this->verifyRequest(); // checks the token in the URL, reroutes to permissionDenied if fails
-        $this->db->banUser($_GET['userid']);;
+        $this->db->banUser($_POST['userid']);;
         reloc('admins', 'listUsers');
     }
 
     public function unBan()
     {
         $this->verifyRequest();
-        $this->db->unbanUser($_GET['userid']);
+        $this->db->unbanUser($_POST['userid']);
         reloc('admins', 'listUsers');
     }
 
     private function verifyRequest()
     {
         $this->verifyIdentity();
-        if ($_GET[TOKEN] != $_SESSION[TOKEN])
+        if ($_POST[TOKEN] != $_SESSION[TOKEN])
         {
             reloc('pages', 'permissionDenied');
         }

@@ -7,4 +7,4 @@
  */
 ?>
 
-<p>Verification has been sent to <?php echox($email); ?>. If you don't receive an email from us in the next 5 minutes, contact an administrator.</p>
+<p>Verification has been sent to the email specified. If you don't receive an email from us in the next 5 minutes, contact an administrator.</p>

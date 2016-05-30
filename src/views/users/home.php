@@ -27,7 +27,10 @@
                     <div class="col-xs-12 col-sm-8">
                         <form action="?controller=users&action=pictureUpload" method="post"
                               enctype="multipart/form-data">
-                            <?php formToken(); ?>
+                            <?php if (isset($_SESSION[TOKEN]))
+                            {
+                                formToken();
+                            } ?>
                             <p>Select new (recommended: 100x100) profile image:</p>
                             <div class="form-group"><input type="file" name="fileToUpload" id="fileToUpload"></div>
                             <div class="form-group"><input type="submit" value="Upload Image" name="submit"></div>
