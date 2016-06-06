@@ -11,7 +11,7 @@
         <link rel="stylesheet" type="text/css" href="bootstrap-3.3.6/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="bootstrap-3.3.6/css/bootstrap-theme.min.css">
         <link rel="stylesheet" type="text/css" href="css/JOFA.css">
-        <title>Message-Lords</title>
+        <title>Jofa - a simple messaging system</title>
     </head>
     <body>
     <header>
